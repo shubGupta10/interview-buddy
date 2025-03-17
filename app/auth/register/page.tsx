@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator"
 import { AlertCircle, MessageSquare, Zap } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
-const RegisterPage = () => {
+export default function RegisterPage (){
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
@@ -102,57 +102,39 @@ const RegisterPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#121225] p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-[#1A1040] p-4 relative overflow-hidden">
       {/* Futuristic background elements */}
-      <div className="absolute w-64 h-64 bg-[#0072FF] opacity-10 rounded-full blur-3xl -top-20 -left-20"></div>
-      <div className="absolute w-96 h-96 bg-[#05E6C1] opacity-10 rounded-full blur-3xl -bottom-32 -right-32"></div>
-      <div className="absolute w-32 h-32 bg-[#00C2FF] opacity-10 rounded-full blur-2xl bottom-20 left-20"></div>
+      <div className="absolute w-64 h-64 bg-[#FF2A6D] opacity-10 rounded-full blur-3xl -top-20 -left-20"></div>
+      <div className="absolute w-96 h-96 bg-[#05FFF8] opacity-10 rounded-full blur-3xl -bottom-32 -right-32"></div>
+      <div className="absolute w-32 h-32 bg-[#9D4EDD] opacity-10 rounded-full blur-2xl bottom-20 left-20"></div>
       
-      {/* Decorative Grid Lines */}
-      <div className="absolute inset-0 z-0 opacity-5">
-        <div className="absolute top-0 left-0 right-0 h-px bg-[#05E6C1]"></div>
-        <div className="absolute top-1/4 left-0 right-0 h-px bg-[#05E6C1]"></div>
-        <div className="absolute top-2/4 left-0 right-0 h-px bg-[#05E6C1]"></div>
-        <div className="absolute top-3/4 left-0 right-0 h-px bg-[#05E6C1]"></div>
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-[#05E6C1]"></div>
-        
-        <div className="absolute left-0 top-0 bottom-0 w-px bg-[#05E6C1]"></div>
-        <div className="absolute left-1/4 top-0 bottom-0 w-px bg-[#05E6C1]"></div>
-        <div className="absolute left-2/4 top-0 bottom-0 w-px bg-[#05E6C1]"></div>
-        <div className="absolute left-3/4 top-0 bottom-0 w-px bg-[#05E6C1]"></div>
-        <div className="absolute right-0 top-0 bottom-0 w-px bg-[#05E6C1]"></div>
-      </div>
       
-      <Card className="w-full max-w-md bg-[#121225] text-white border border-[#0072FF]/30 rounded-xl shadow-lg shadow-[#0072FF]/10 backdrop-blur-sm relative z-10">
-        <div className="absolute h-1 w-full bg-gradient-to-r from-[#0072FF] via-[#00C2FF] to-[#05E6C1] top-0 left-0 rounded-t-xl"></div>
+      <Card className="w-full max-w-md bg-[#1A1040] text-white border border-[#FF2A6D]/30 rounded-xl shadow-lg shadow-[#FF2A6D]/10 backdrop-blur-sm relative z-10">
+        <div className="absolute h-1 w-full bg-gradient-to-r from-[#FF2A6D] via-[#9D4EDD] to-[#05FFF8] top-0 left-0 rounded-t-xl"></div>
         
         <CardHeader className="space-y-2 pb-4">
           <div className="flex justify-center mb-2">
-            <div className="flex items-center bg-gradient-to-r from-[#0072FF] to-[#05E6C1] p-2 rounded-lg shadow-md">
-              <Zap className="h-6 w-6 text-white mr-2" />
-              <span className="font-bold text-white">InterviewBuddy</span>
-            </div>
           </div>
-          <CardTitle className="text-2xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-[#0072FF] to-[#05E6C1]">
+          <CardTitle className="text-2xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-[#FF2A6D] to-[#05FFF8]">
             Join InterviewBuddy
           </CardTitle>
-          <CardDescription className="text-center text-[#E0E0E0]/70">
+          <CardDescription className="text-center text-[#D1D7E0]/70">
             Create an account to start your interview preparation journey
           </CardDescription>
         </CardHeader>
         
         <CardContent>
           {error && (
-            <Alert variant="destructive" className="mb-6 bg-[#FF5F40]/20 border border-[#FF5F40] text-white">
-              <AlertCircle className="h-4 w-4 text-[#FF5F40]" />
+            <Alert variant="destructive" className="mb-6 bg-[#FF9F1C]/20 border border-[#FF9F1C] text-white">
+              <AlertCircle className="h-4 w-4 text-[#FF9F1C]" />
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-[#E0E0E0] text-sm font-medium flex items-center">
-                <span className="inline-block w-1 h-4 bg-[#0072FF] mr-2 rounded-sm"></span>
+              <Label htmlFor="email" className="text-[#D1D7E0] text-sm font-medium flex items-center">
+                <span className="inline-block w-1 h-4 bg-[#FF2A6D] mr-2 rounded-sm"></span>
                 Email Address
               </Label>
               <Input
@@ -163,13 +145,13 @@ const RegisterPage = () => {
                 required
                 disabled={isLoading}
                 placeholder="your.email@example.com"
-                className="w-full bg-[#1A1A35] text-white border-[#0072FF]/30 focus:border-[#0072FF] rounded-md focus:ring-1 focus:ring-[#0072FF] placeholder:text-[#E0E0E0]/40"
+                className="w-full bg-[#231651] text-white border-[#FF2A6D]/30 focus:border-[#FF2A6D] rounded-md focus:ring-1 focus:ring-[#FF2A6D] placeholder:text-[#D1D7E0]/40"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-[#E0E0E0] text-sm font-medium flex items-center">
-                <span className="inline-block w-1 h-4 bg-[#00C2FF] mr-2 rounded-sm"></span>
+              <Label htmlFor="password" className="text-[#D1D7E0] text-sm font-medium flex items-center">
+                <span className="inline-block w-1 h-4 bg-[#9D4EDD] mr-2 rounded-sm"></span>
                 Password
               </Label>
               <Input
@@ -181,26 +163,26 @@ const RegisterPage = () => {
                 minLength={6}
                 disabled={isLoading}
                 placeholder="Create a password (min. 6 characters)"
-                className="w-full bg-[#1A1A35] text-white border-[#00C2FF]/30 focus:border-[#0072FF] rounded-md focus:ring-1 focus:ring-[#0072FF]"
+                className="w-full bg-[#231651] text-white border-[#9D4EDD]/30 focus:border-[#FF2A6D] rounded-md focus:ring-1 focus:ring-[#FF2A6D]"
               />
             </div>
 
             <Button 
               type="submit" 
-              className="w-full bg-[#0072FF] hover:bg-[#0072FF]/90 text-white font-medium py-5 rounded-md relative overflow-hidden group transition-all duration-300"
+              className="w-full bg-[#FF2A6D] hover:bg-[#FF2A6D]/90 text-white font-medium py-5 rounded-md relative overflow-hidden group transition-all duration-300"
               disabled={isLoading}
             >
               <span className="absolute inset-0 w-full h-full transition-all duration-300 opacity-0 group-hover:opacity-100">
-                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-[#0072FF] via-[#00C2FF] to-[#05E6C1] bg-size-200 animate-shimmer"></span>
+                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-[#FF2A6D] via-[#9D4EDD] to-[#05FFF8] bg-size-200 animate-shimmer"></span>
               </span>
               <span className="relative z-10">{isLoading ? "Creating Account..." : "Create Account"}</span>
             </Button>
           </form>
 
           <div className="relative my-6">
-            <Separator className="bg-[#E0E0E0]/10" />
+            <Separator className="bg-[#D1D7E0]/10" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="bg-[#121225] px-3 text-[#E0E0E0]/60 text-xs">Or continue with</span>
+              <span className="bg-[#1A1040] px-3 text-[#D1D7E0]/60 text-xs">Or continue with</span>
             </div>
           </div>
           
@@ -208,7 +190,7 @@ const RegisterPage = () => {
             <Button
               onClick={handleGoogleSignIn}
               variant="outline"
-              className="w-full bg-transparent hover:bg-[#1A1A35] text-[#E0E0E0] border border-[#E0E0E0]/20 rounded-md transition-all font-medium"
+              className="w-full bg-transparent cursor-pointer text-[#D1D7E0] border border-[#D1D7E0]/20 rounded-md transition-all font-medium"
               disabled={isLoading}
             >
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -235,7 +217,7 @@ const RegisterPage = () => {
             <Button
               onClick={handleGitHubSignIn}
               variant="outline"
-              className="w-full bg-transparent hover:bg-[#1A1A35] text-[#E0E0E0] border border-[#E0E0E0]/20 rounded-md transition-all font-medium"
+              className="w-full bg-transparent cursor-pointer text-[#D1D7E0] border border-[#D1D7E0]/20 rounded-md transition-all font-medium"
               disabled={isLoading}
             >
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
@@ -247,28 +229,26 @@ const RegisterPage = () => {
         </CardContent>
         
         <CardFooter className="flex justify-center pb-6">
-          <p className="text-sm text-[#E0E0E0]/70">
+          <p className="text-sm text-[#D1D7E0]/70">
             Already have an account?{" "}
-            <a href="/auth/login" className="text-[#05E6C1] hover:text-[#05E6C1]/90 transition-colors font-medium">
+            <a href="/auth/login" className="text-[#05FFF8] hover:text-[#05FFF8]/90 transition-colors font-medium">
               Sign in
             </a>
           </p>
         </CardFooter>
         
         {/* Decorative futuristic corner elements */}
-        <div className="absolute w-4 h-4 top-2 left-2 border-l-2 border-t-2 border-[#05E6C1]/60 opacity-70"></div>
-        <div className="absolute w-4 h-4 top-2 right-2 border-r-2 border-t-2 border-[#05E6C1]/60 opacity-70"></div>
-        <div className="absolute w-4 h-4 bottom-2 left-2 border-l-2 border-b-2 border-[#05E6C1]/60 opacity-70"></div>
-        <div className="absolute w-4 h-4 bottom-2 right-2 border-r-2 border-b-2 border-[#05E6C1]/60 opacity-70"></div>
+        <div className="absolute w-4 h-4 top-2 left-2 border-l-2 border-t-2 border-[#05FFF8]/60 opacity-70"></div>
+        <div className="absolute w-4 h-4 top-2 right-2 border-r-2 border-t-2 border-[#05FFF8]/60 opacity-70"></div>
+        <div className="absolute w-4 h-4 bottom-2 left-2 border-l-2 border-b-2 border-[#05FFF8]/60 opacity-70"></div>
+        <div className="absolute w-4 h-4 bottom-2 right-2 border-r-2 border-b-2 border-[#05FFF8]/60 opacity-70"></div>
         
         {/* Decorative circuit dots */}
-        <div className="absolute h-1 w-1 rounded-full bg-[#05E6C1] top-6 left-6 shadow-md shadow-[#05E6C1]/50 animate-pulse"></div>
-        <div className="absolute h-1 w-1 rounded-full bg-[#0072FF] top-6 right-6 shadow-md shadow-[#0072FF]/50 animate-pulse" style={{animationDelay: "1.5s"}}></div>
-        <div className="absolute h-1 w-1 rounded-full bg-[#05E6C1] bottom-6 left-6 shadow-md shadow-[#05E6C1]/50 animate-pulse" style={{animationDelay: "1s"}}></div>
-        <div className="absolute h-1 w-1 rounded-full bg-[#0072FF] bottom-6 right-6 shadow-md shadow-[#0072FF]/50 animate-pulse" style={{animationDelay: "0.5s"}}></div>
+        <div className="absolute h-1 w-1 rounded-full bg-[#05FFF8] top-6 left-6 shadow-md shadow-[#05FFF8]/50 animate-pulse"></div>
+        <div className="absolute h-1 w-1 rounded-full bg-[#FF2A6D] top-6 right-6 shadow-md shadow-[#FF2A6D]/50 animate-pulse" style={{animationDelay: "1.5s"}}></div>
+        <div className="absolute h-1 w-1 rounded-full bg-[#05FFF8] bottom-6 left-6 shadow-md shadow-[#05FFF8]/50 animate-pulse" style={{animationDelay: "1s"}}></div>
+        <div className="absolute h-1 w-1 rounded-full bg-[#9D4EDD] bottom-6 right-6 shadow-md shadow-[#9D4EDD]/50 animate-pulse" style={{animationDelay: "0.5s"}}></div>
       </Card>
     </div>
   )
 }
-
-export default RegisterPage
