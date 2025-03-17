@@ -2,24 +2,35 @@
 
 import { useEffect, useState } from "react"
 import { Button } from "./ui/button"
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuSeparator,
-//   DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Menu, User, LogOut, X } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useSession } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
+import useAuthStore from "@/app/store/useAuthStore"
+
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  username?: string;
+  provider: string;
+  isAdmin: boolean;
+  profileImage: string;
+}
 
 function Navbar() {
-  // Authentication and user state to be implemented in the future
   const { data: session } = useSession()
-  // const { user, setUser, logout } = useAuthStore()
-  // const [currentUser, setCurrentUser] = useState(null)
+  const { user, setUser, logout } = useAuthStore()
+
+  const [currentUser, setCurrentUser] = useState<User | null>(null)
   
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const router = useRouter()
@@ -29,17 +40,15 @@ function Navbar() {
     setIsMounted(true)
   }, [])
 
-  // Future authentication implementation
-  /*
   useEffect(() => {
     if (session?.user) {
       setUser({
         id: session.user.id || "",
-        username: session.user.name || "",
         email: session.user.email || "",
+        name: session.user.name || "",
+        provider: session.user.provider || "",
         isAdmin: (session.user as any).isAdmin || false,
         profileImage: session.user.image || "",
-        lastLogin: new Date() || "",
       })
     }
   }, [session, setUser])
@@ -55,7 +64,6 @@ function Navbar() {
     }
     getCurrentUser()
   }, [])
-  */
 
   return (
     <nav className="sticky top-0 z-50 bg-[#1A1040] border-b border-[#FF2A6D]/30 text-white shadow-lg">
@@ -81,10 +89,10 @@ function Navbar() {
                 Home
               </Link>
               <Link
-                href="/about"
+                href="/dashboard"
                 className="px-3 py-2 text-[#D1D7E0] hover:text-[#05FFF8] transition-colors"
               >
-                About
+                Dashboard
               </Link>
               <Link
                 href="/features"
@@ -98,7 +106,6 @@ function Navbar() {
               >
                 Pricing
               </Link>
-              {/* Admin link - commented out for future implementation
               {isMounted && currentUser?.isAdmin === true && (
                 <Link
                   href="/admin/dashboard"
@@ -107,13 +114,12 @@ function Navbar() {
                   Admin
                 </Link>
               )}
-              */}
+             
             </div>
           </div>
 
           {/* Action Buttons & User Menu */}
           <div className="flex items-center">
-            {/* Commented out user dropdown for future implementation
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -124,7 +130,7 @@ function Navbar() {
                   >
                     <span className="sr-only">Open user menu</span>
                     <div className="flex items-center gap-x-2">
-                      <span className="text-sm">{currentUser?.username || user?.username}</span>
+                      <span className="text-sm">{currentUser?.name || user?.name}</span>
                       <div className="h-6 w-6 rounded-full bg-[#9D4EDD]/10 p-1 text-[#9D4EDD]">
                         <User className="h-4 w-4" />
                       </div>
@@ -153,7 +159,6 @@ function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-            */}
               <Button
                 variant="default"
                 size="default"
@@ -162,7 +167,7 @@ function Navbar() {
               >
                 Get Started
               </Button>
-            {/* } */}
+            )}
 
             {/* Mobile Menu Button */}
             <div className="ml-4 md:hidden">
@@ -197,14 +202,14 @@ function Navbar() {
                       className="block px-3 py-2 rounded-md text-[#D1D7E0] hover:text-[#05FFF8] hover:bg-[#231651] transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Home
+                      Dashboard
                     </Link>
                     <Link
-                      href="/about"
+                      href="/dashboard"
                       className="block px-3 py-2 rounded-md text-[#D1D7E0] hover:text-[#05FFF8] hover:bg-[#231651] transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      About
+                      Profile
                     </Link>
                     <Link
                       href="/features"
@@ -220,7 +225,6 @@ function Navbar() {
                     >
                       Pricing
                     </Link>
-                    {/* Admin link - commented out for future implementation
                     {isMounted && currentUser?.isAdmin === true && (
                       <Link
                         href="/admin/dashboard"
@@ -230,11 +234,8 @@ function Navbar() {
                         Admin
                       </Link>
                     )}
-                    */}
 
-                    {/* Conditional rendering for auth - commented out for future implementation
                     {!user ? (
-                    */}
                       <Button
                         variant="default"
                         size="default"
@@ -246,7 +247,6 @@ function Navbar() {
                       >
                         Get Started
                       </Button>
-                    {/* 
                     ) : (
                       <Button
                         variant="outline"
@@ -262,7 +262,6 @@ function Navbar() {
                         Logout
                       </Button>
                     )}
-                    */}
                   </div>
                 </SheetContent>
               </Sheet>
