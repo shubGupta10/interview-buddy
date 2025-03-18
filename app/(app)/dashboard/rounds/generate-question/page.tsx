@@ -13,69 +13,71 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import useQuestionStore from "@/app/store/useQuestionStore";
-import DisplayQuestions from "@/components/displayQuestions";
 import { useRouter } from "next/navigation";
+import QuestionCategories from "@/components/QuestionCategories";
 
 function GenerateQuestions() {
-    const {setQuestions, questions} = useQuestionStore()
+    const { setQuestions } = useQuestionStore();
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const [difficulty, setDifficulty] = useState<string | undefined>();
     const [language, setLanguage] = useState<string | undefined>();
+    
     const searchQuery = useSearchParams();
     const roundName = searchQuery.get("roundName");
     const companyId = searchQuery.get("companyId");
     const roundId = searchQuery.get("roundId");
-    console.log("Query Params:", { roundName, companyId, roundId });
-    const router = useRouter()
+    
+    const router = useRouter();
+
+    const roundsWithoutLanguage = [
+        "Behavioral Interview",
+        "HR Round",
+        "Managerial Round"
+    ];
 
     const handleGenerateQuestions = async () => {
-        if (!difficulty || !language) {
-            alert("Please select difficulty and language before generating questions.");
+        if (!difficulty) {
+            alert("Please select difficulty before generating questions.");
             return;
         }
-    
-        // Check the values before sending
-        console.log("Sending payload:", {
-            companyId,
-            roundId,
-            roundName,
-            difficulty,
-            language,
-        });
-    
+
+        // Prepare request body
+        const requestBody: any = { companyId, roundId, roundName, difficulty };
+
+        // Add language **only if** it's required
+        if (!roundsWithoutLanguage.includes(roundName!)) {
+            if (!language) {
+                alert("Please select a programming language.");
+                return;
+            }
+            requestBody.language = language;
+        }
+
         try {
             const response = await fetch(`${backendUrl}/question/generate-questions`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    companyId,
-                    roundId,
-                    roundName,
-                    difficulty,
-                    language,
-                }),
+                body: JSON.stringify(requestBody),
             });
-    
-            const responseText = await response.text(); // Log response
+
+            const responseText = await response.text();
             console.log("Raw Response:", responseText);
-    
+
             if (!response.ok) {
                 throw new Error("Failed to generate questions.");
             }
-    
+
             const data = JSON.parse(responseText);
             setQuestions(data.questions);
-            router.push(`/display-questions?roundId=${roundId}&roundName=${roundName}&companyId=${companyId}`);
-            console.log("Questions generated:", data);
+            router.push(`/display-questions?roundId=${roundId}&roundName=${roundName}&companyId=${companyId}&difficulty=${difficulty}${language ? `&language=${language}` : ""}`);
             alert("Questions generated successfully!");
         } catch (error) {
             console.error("Error generating questions:", error);
             alert("Error generating questions. Please try again.");
         }
     };
-    
 
     return (
         <div className="p-4">
@@ -91,7 +93,7 @@ function GenerateQuestions() {
                 {/* Select Difficulty */}
                 <div>
                     <Label>Select Difficulty</Label>
-                    <Select onValueChange={(value) => setDifficulty(value)}>
+                    <Select value={difficulty} onValueChange={(value) => setDifficulty(value)}>
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Select Difficulty" />
                         </SelectTrigger>
@@ -103,29 +105,34 @@ function GenerateQuestions() {
                     </Select>
                 </div>
 
-                {/* Select Language */}
-                <div>
-                    <Label>Select Language</Label>
-                    <Select onValueChange={(value) => setLanguage(value)}>
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Select Language" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="python">Python</SelectItem>
-                            <SelectItem value="javascript">JavaScript</SelectItem>
-                            <SelectItem value="java">Java</SelectItem>
-                            <SelectItem value="go">Go</SelectItem>
-                            <SelectItem value="php">PHP</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
+                {/* Show Language Selection ONLY if required */}
+                {!roundsWithoutLanguage.includes(roundName!) && (
+                    <div>
+                        <Label>Select Language</Label>
+                        <Select value={language} onValueChange={(value) => setLanguage(value)}>
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Select Language" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="python">Python</SelectItem>
+                                <SelectItem value="javascript">JavaScript</SelectItem>
+                                <SelectItem value="java">Java</SelectItem>
+                                <SelectItem value="go">Go</SelectItem>
+                                <SelectItem value="php">PHP</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                )}
 
                 {/* Generate Button */}
                 <Button onClick={handleGenerateQuestions}>Generate Questions</Button>
             </div>
 
-            {/* Display questions */}
-            {/* <DisplayQuestions questions={questions} /> */}
+            <QuestionCategories 
+                companyId={companyId || ""} 
+                roundId={roundId || ""} 
+                roundName={roundName || ""} 
+            />
         </div>
     );
 }
