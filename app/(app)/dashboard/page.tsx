@@ -15,31 +15,35 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import { PlusCircle, Building2, ChevronRight } from "lucide-react";
 
 interface Company {
-    id: string;
-    companyName: string;
-  }
-  
+  id: string;
+  companyName: string;
+}
 
 function Dashboard() {
   const [companyName, setCompanyName] = useState("");
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const { user } = useAuthStore();
   const session = useSession();
   const userId = session.data?.user.id;
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
-    if (!userId) return; 
+    if (!userId) return;
 
     const fetchAllCompanies = async () => {
       try {
-        const response = await fetch(`${backendUrl}/company/fetch-companies?userId=${userId}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
+        const response = await fetch(
+          `${backendUrl}/company/fetch-companies?userId=${userId}`,
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
 
         if (!response.ok) throw new Error("Failed to fetch companies");
 
@@ -51,8 +55,7 @@ function Dashboard() {
     };
 
     fetchAllCompanies();
-  }, [userId]); 
-
+  }, [userId, backendUrl]);
 
   const handleAddCompany = async () => {
     if (!companyName.trim()) return alert("Company name cannot be empty!");
@@ -67,69 +70,137 @@ function Dashboard() {
       if (!response.ok) throw new Error("Failed to create company");
 
       const newCompany = await response.json();
-      setCompanies((prev) => [...prev, newCompany]); 
-      setCompanyName(""); 
+      setCompanies((prev) => [...prev, newCompany]);
+      setCompanyName("");
+      setIsDialogOpen(false);
     } catch (error: any) {
       console.error(error.message);
     }
   };
 
   return (
-    <div className="min-h-screen p-5">
-      {/* Header */}
-      <div className="text-center text-4xl font-semibold mb-8">
-        Welcome to InterviewBuddy, <span className="text-blue-600">{user?.name}</span>
+    <div className="container mx-auto px-4 py-8 max-w-6xl">
+      {/* Header Section with Gradient */}
+      <div className="mb-12 text-center">
+        <h1 className="text-5xl font-bold mb-2 text-white">
+          Welcome to{" "}
+          <span className="bg-gradient-to-r from-[#FF2A6D] to-[#05FFF8] text-transparent bg-clip-text">
+            InterviewBuddy
+          </span>
+        </h1>
+        <p className="text-xl text-[#D1D7E0]/80">
+          Hello, <span className="text-[#05FFF8] font-medium">{user?.name}</span>! Prepare for your next interview with AI assistance.
+        </p>
       </div>
 
       {/* Create Company Section */}
-      <div className="flex justify-center items-center mb-6">
-        <Dialog>
-          <DialogTrigger className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700">
-            + Create Company
+      <div className="flex justify-center mb-10">
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button
+              className="bg-[#FF2A6D] hover:bg-[#FF2A6D]/80 text-white px-6 py-6 rounded-lg shadow-lg hover:shadow-[#FF2A6D]/20 transition-all duration-300 flex items-center gap-2 text-lg font-medium cursor-pointer"
+            >
+              <PlusCircle size={20} />
+              Create New Company
+            </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="bg-[#231651] border border-[#9D4EDD] text-[#D1D7E0]">
             <DialogHeader>
-              <DialogTitle>Create a New Company</DialogTitle>
-              <DialogDescription>
-                <div className="space-y-4">
-                  <div>
-                    <Label>Company Name</Label>
-                    <Input
-                      type="text"
-                      placeholder="Enter company name"
-                      value={companyName}
-                      onChange={(e) => setCompanyName(e.target.value)}
-                      className="mt-1"
-                    />
-                  </div>
-                  <div className="flex justify-end">
-                    <Button onClick={handleAddCompany} className="bg-green-600 hover:bg-green-700">
-                      Add Company
-                    </Button>
-                  </div>
-                </div>
+              <DialogTitle className="text-[#05FFF8] text-2xl">Create a New Company</DialogTitle>
+              <DialogDescription className="text-[#D1D7E0]/70">
+                Add a company to organize your interview preparation
               </DialogDescription>
             </DialogHeader>
+            <div className="space-y-4 pt-4">
+              <div>
+                <Label className="text-[#D1D7E0]">Company Name</Label>
+                <Input
+                  type="text"
+                  placeholder="Enter company name"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  className="mt-2 bg-[#1A1040] border-[#9D4EDD]/50 text-[#D1D7E0] focus:border-[#05FFF8] focus:ring-[#05FFF8]/20"
+                />
+              </div>
+              <div className="flex justify-end pt-2">
+                <Button 
+                  onClick={handleAddCompany} 
+                  className="bg-gradient-to-r from-[#FF2A6D] to-[#9D4EDD] hover:opacity-90 text-white font-medium cursor-pointer"
+                >
+                  Add Company
+                </Button>
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
       </div>
 
       {/* Display Companies */}
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-3xl mx-auto">
+        <h2 className="text-2xl font-semibold mb-6 text-[#05FFF8] pl-2 border-l-4 border-[#FF2A6D]">
+          Your Companies
+        </h2>
+        
         {companies.length > 0 ? (
           <div className="grid gap-4">
-            {companies.map((company) => (
-              <div key={company.id} className="p-4 border rounded-lg shadow-md bg-transparent">
-                <h2 className="text-lg font-medium">{company.companyName}</h2>
-                <h2 className="text-lg font-medium">{company.id}</h2>
-                <Button className="cursor-pointer" onClick={() => { router.push(`/dashboard/rounds?companyId=${company.id}`) }}>Open</Button>
+            {companies.map((company, index) => (
+              <div 
+                key={company.id || index} 
+                className="p-5 border border-[#9D4EDD]/30 rounded-xl bg-gradient-to-r from-[#1A1040] to-[#231651] hover:from-[#231651] hover:to-[#1A1040] shadow-lg hover:shadow-[#9D4EDD]/20 transition-all duration-300 flex justify-between items-center group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-[#9D4EDD]/20 rounded-full text-[#05FFF8]">
+                    <Building2 size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-medium text-white">{company.companyName}</h3>
+                    <p className="text-sm text-[#D1D7E0]/60"> ID: {company.id ? company.id.substring(0, 8) : "N/A"}...</p>
+                  </div>
+                </div>
+                <Button 
+                  className="bg-[#05FFF8] hover:bg-[#05FFF8]/80 text-[#1A1040] font-medium px-5 flex items-center gap-1 group-hover:gap-2 transition-all duration-300 cursor-pointer" 
+                  onClick={() => { router.push(`/dashboard/rounds?companyId=${company.id}`) }}
+                >
+                  Open <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform duration-300 cursor-pointer" />
+                </Button>
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center text-gray-500">No companies found. Create one above!</div>
+          <div className="text-center p-12 border border-dashed border-[#9D4EDD]/30 rounded-xl bg-[#1A1040]/50">
+            <div className="text-[#D1D7E0]/60 mb-3">
+              <Building2 size={40} className="mx-auto mb-3 opacity-50" />
+              <p className="text-lg">No companies found. Create one to get started!</p>
+            </div>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  className="bg-[#FF2A6D]/80 hover:bg-[#FF2A6D] text-white mt-3"
+                >
+                  <PlusCircle size={16} className="mr-2" />
+                  Create Your First Company
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+          </div>
         )}
       </div>
+      
+      {/* Help Section */}
+      {/* <div className="mt-16 max-w-3xl mx-auto p-5 rounded-xl bg-[#231651] border border-[#9D4EDD]/20">
+        <h3 className="text-xl font-medium text-[#05FFF8] mb-3">Getting Started</h3>
+        <p className="text-[#D1D7E0]/80 mb-4">
+          To begin preparing for interviews, first create a company. Then, add interview rounds and generate AI-powered interview questions.
+        </p>
+        <div className="flex justify-end">
+          <Button 
+            variant="link" 
+            className="text-[#FF2A6D] hover:text-[#FF2A6D]/80 p-0 font-medium flex items-center gap-1"
+          >
+            Learn More <ChevronRight size={16} />
+          </Button>
+        </div>
+      </div> */}
     </div>
   );
 }
