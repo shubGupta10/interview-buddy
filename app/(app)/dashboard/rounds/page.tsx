@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PlusCircle, Loader2, ChevronRight, Calendar, AlertCircle } from "lucide-react";
+import { PlusCircle, Loader2, ChevronRight, Calendar, AlertCircle, History, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function CompanyRounds() {
@@ -34,9 +35,12 @@ export default function CompanyRounds() {
   const [rounds, setRounds] = useState<{ id: any; roundName: string }[]>([]);
   const [selectedRound, setSelectedRound] = useState("");
   const [loading, setLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [companyName, setCompanyName] = useState("Company");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [roundToDelete, setRoundToDelete] = useState<{ id: string, name: string } | null>(null);
 
   const roundOptions = [
     { value: "Technical Interview", label: "Technical Interview" },
@@ -122,7 +126,48 @@ export default function CompanyRounds() {
       setLoading(false);
     }
   };
+
+  const openDeleteConfirmation = (roundId: string, roundName: string) => {
+    setRoundToDelete({ id: roundId, name: roundName });
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteRound = async () => {
+    if (!roundToDelete || !companyId) return;
+    const toastId = toast.loading(`Deleting ${roundToDelete.name}...`);
+    
+    try {
+      setDeleteLoading(roundToDelete.id);
+      
+      const response = await fetch(`${backendUrl}/company/delete-round`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ userId, companyId, roundId: roundToDelete.id })
+      });
+      
+      if (!response.ok) throw new Error("Failed to delete round");
+      
+      // Remove the deleted round from state
+      setRounds(rounds.filter(round => round.id !== roundToDelete.id));
+      
+      toast.success(`✅ ${roundToDelete.name} deleted successfully!`, { id: toastId });
+    } catch (error) {
+      toast.error("❌ Failed to delete interview round. Please try again.", { id: toastId });
+      console.error("Error deleting round:", error);
+      setError("Failed to delete interview round.");
+    } finally {
+      setDeleteLoading(null);
+      setIsDeleteDialogOpen(false);
+      setRoundToDelete(null);
+    }
+  };
   
+  // Function to navigate to previous questions
+  const navigateToPreviousQuestions = (roundId: string, roundName: string) => {
+    router.push(`/prev-questions?roundId=${roundId}&roundName=${roundName}&companyId=${companyId}`);
+  };
 
   // Function to get round icon based on round name
   const getRoundIcon = (roundName: string) => {
@@ -150,7 +195,7 @@ export default function CompanyRounds() {
       <div className="mb-8">
         <button 
           onClick={() => router.back()} 
-          className="text-[#05FFF8] hover:text-[#05FFF8]/80 flex items-center mb-4 transition-colors"
+          className="text-[#05FFF8] hover:text-[#05FFF8]/80 flex items-center mb-10 transition-colors cursor-pointer"
         >
           <ChevronRight className="rotate-180 mr-1" size={18} /> Back to Dashboard
         </button>
@@ -215,6 +260,49 @@ export default function CompanyRounds() {
         </div>
       </div>
 
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="bg-[#231651] border border-[#9D4EDD] text-[#D1D7E0]">
+          <DialogHeader>
+            <DialogTitle className="text-[#05FFF8] text-2xl">Delete Interview Round</DialogTitle>
+            <DialogDescription className="text-[#D1D7E0]/70">
+              Are you sure you want to delete this round? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            {roundToDelete && (
+              <div className="p-4 bg-[#1A1040] rounded-lg">
+                <div className="flex items-center">
+                  <div className="text-2xl mr-3">{getRoundIcon(roundToDelete.name)}</div>
+                  <h3 className="text-lg font-medium text-white">{roundToDelete.name}</h3>
+                </div>
+              </div>
+            )}
+          </div>
+          <DialogFooter className="flex justify-end space-x-2">
+            <Button
+              onClick={() => setIsDeleteDialogOpen(false)}
+              className="bg-[#1A1040] hover:bg-[#231651] text-[#D1D7E0] border border-[#9D4EDD]/30"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDeleteRound}
+              className="bg-[#ff2a6d] hover:bg-[#bf2362] text-white"
+              disabled={deleteLoading !== null}
+            >
+              {deleteLoading !== null ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Deleting...
+                </>
+              ) : (
+                "Delete Round"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Error Message */}
       {error && (
         <div className="mb-6 p-4 bg-[#FF9F1C]/10 border border-[#FF9F1C] rounded-lg flex items-center text-[#FF9F1C]">
@@ -237,9 +325,18 @@ export default function CompanyRounds() {
                 key={round.id}
                 className="p-6 border border-[#9D4EDD]/30 rounded-xl bg-gradient-to-br from-[#1A1040] to-[#231651]/80 hover:shadow-lg hover:shadow-[#9D4EDD]/20 transition-all duration-300 group"
               >
-                <div className="flex items-center mb-4">
-                  <div className="text-3xl mr-3">{getRoundIcon(round.roundName)}</div>
-                  <h3 className="text-xl font-semibold text-white">{round.roundName}</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center">
+                    <div className="text-3xl mr-3">{getRoundIcon(round.roundName)}</div>
+                    <h3 className="text-xl font-semibold text-white">{round.roundName}</h3>
+                  </div>
+                  <Button 
+                    onClick={() => openDeleteConfirmation(round.id, round.roundName)}
+                    className="bg-[#ff2a6d] hover:bg-[#bf2362] text-white font-medium px-3 py-1 h-8 flex items-center gap-1 transition-all duration-300 cursor-pointer"
+                  >
+                    <Trash2 size={16} />
+                    <span className="ml-1">Delete</span>
+                  </Button>
                 </div>
                 
                 <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#9D4EDD]/20">
@@ -248,14 +345,25 @@ export default function CompanyRounds() {
                     <span className="text-sm">Round ID: {round.id.substring(0, 8)}...</span>
                   </div>
                   
-                  <Button
-                    onClick={() => {
-                      router.push(`/dashboard/rounds/generate-question?companyId=${companyId}&roundId=${round.id}&roundName=${round.roundName}`);
-                    }}
-                    className="bg-[#05FFF8] hover:bg-[#05FFF8]/80 text-[#1A1040] font-medium px-4 flex items-center gap-1 group-hover:gap-2 transition-all duration-300 cursor-pointer"
-                  >
-                    Open this round <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
-                  </Button>
+                  <div className="flex gap-3">
+                    {/* Previous Questions Button */}
+                    <Button
+                      onClick={() => navigateToPreviousQuestions(round.id, round.roundName)}
+                      className="bg-[#ff2a6d] hover:bg-[#bf2362] text-white font-medium px-4 flex items-center gap-1 transition-all duration-300 cursor-pointer"
+                    >
+                      <History size={16} className="mr-1" /> View Previous Questions
+                    </Button>
+                    
+                    {/* Open Round Button */}
+                    <Button
+                      onClick={() => {
+                        router.push(`/dashboard/rounds/generate-question?companyId=${companyId}&roundId=${round.id}&roundName=${round.roundName}`);
+                      }}
+                      className="bg-[#05FFF8] hover:bg-[#05FFF8]/80 text-[#1A1040] font-medium px-4 flex items-center gap-1 group-hover:gap-2 transition-all duration-300 cursor-pointer"
+                    >
+                      Open this round <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}

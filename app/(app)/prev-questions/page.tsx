@@ -143,10 +143,10 @@ const QuestionCategories: React.FC<Props> = () => {
             <div className="mb-8">
                 <button 
                     onClick={() => router.back()}
-                    className="flex items-center text-[#05FFF8] mb-4 hover:text-[#05FFF8]/80 transition-colors"
+                    className="flex items-center text-[#05FFF8] mb-10 cursor-pointer hover:text-[#05FFF8]/80 transition-colors"
                 >
                     <ChevronLeft className="h-4 w-4 mr-1" />
-                    Back
+                    Back to Rounds page
                 </button>
                 
                 <div className="bg-gradient-to-br from-[#1A1040] to-[#231651] p-6 rounded-xl border border-[#9D4EDD]/30 shadow-lg mb-6">

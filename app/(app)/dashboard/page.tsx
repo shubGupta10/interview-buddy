@@ -15,21 +15,36 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-import { PlusCircle, Building2, ChevronRight, Trash } from "lucide-react";
+import { 
+  PlusCircle, 
+  Building2, 
+  ChevronRight, 
+  Trash, 
+  Layers
+} from "lucide-react";
 import toast from "react-hot-toast";
-import LastGenerated from "@/components/LastGenerated";
 
 interface Company {
   id: string;
   companyName: string;
 }
 
+interface DashboardDetails {
+  totalCompanies: number;
+  totalRounds: number;
+}
+
 function Dashboard() {
   const [companyName, setCompanyName] = useState("");
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [dashboardDetails, setDashboardDetails] = useState<DashboardDetails>({
+    totalCompanies: 0,
+    totalRounds: 0
+  });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [companyToDelete, setCompanyToDelete] = useState<string | null>(null);
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const { user } = useAuthStore();
   const session = useSession();
@@ -39,9 +54,11 @@ function Dashboard() {
   useEffect(() => {
     if (!userId) return;
 
-    const fetchAllCompanies = async () => {
+    const fetchAllData = async () => {
+      setIsLoading(true);
       try {
-        const response = await fetch(
+        // Fetch companies
+        const companiesResponse = await fetch(
           `${backendUrl}/company/fetch-companies?userId=${userId}`,
           {
             method: "GET",
@@ -49,17 +66,32 @@ function Dashboard() {
           }
         );
 
-        if (!response.ok) throw new Error("Failed to fetch companies");
+        if (!companiesResponse.ok) throw new Error("Failed to fetch companies");
+        const companiesData = await companiesResponse.json();
+        setCompanies(companiesData.companies || []);
 
-        const data = await response.json();
-        setCompanies(data.companies || []);
+        // Fetch dashboard details
+        const dashboardResponse = await fetch(
+          `${backendUrl}/company/get-dashboard-details?userId=${userId}`,
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        if (!dashboardResponse.ok) throw new Error("Failed to fetch dashboard details");
+        const dashboardData = await dashboardResponse.json();
+        setDashboardDetails(dashboardData.dashboardDetails);
       } catch (error: any) {
         console.error(error.message);
+        toast.error("Failed to load dashboard data");
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchAllCompanies();
-  }, [userId]);
+    fetchAllData();
+  }, [userId, backendUrl]);
 
   const handleAddCompany = async () => {
     if (!companyName.trim()) return toast.error("Company name cannot be empty!");
@@ -76,6 +108,10 @@ function Dashboard() {
   
       const newCompany = await response.json();
       setCompanies((prev) => [...prev, newCompany]);
+      setDashboardDetails(prev => ({
+        ...prev,
+        totalCompanies: prev.totalCompanies + 1
+      }));
       setCompanyName("");
       setIsDialogOpen(false);
       toast.success("Company added successfully", { id: toastId });
@@ -102,8 +138,11 @@ function Dashboard() {
   
       if (!response.ok) throw new Error("Failed to delete company");
   
-      const deletedCompany = companies.find(c => c.id === companyToDelete);
       setCompanies(companies.filter(company => company.id !== companyToDelete));
+      setDashboardDetails(prev => ({
+        ...prev,
+        totalCompanies: prev.totalCompanies - 1
+      }));
       setIsConfirmDeleteOpen(false);
       setCompanyToDelete(null);
   
@@ -122,33 +161,46 @@ function Dashboard() {
     return "evening";
   };
   
-
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
-      {/* Header Section with Gradient */}
-      <div className="mb-12 text-center">
-      <h1 className="text-4xl md:text-5xl font-bold mb-3 text-white">
+      {/* Header Section */}
+      <div className="mb-8 text-center">
+        <h1 className="text-4xl md:text-5xl font-bold mb-3 text-white">
           Good {getTimeOfDay()},{" "}
           <span className="text-[#05FFF8] font-medium">{user?.name?.split(' ')[0] || 'there'}</span>!
         </h1>
-        <p className="text-xl text-[#D1D7E0]/80 mb-6">
-          Your next interview success story starts here.
+        <p className="text-xl text-[#D1D7E0]/80 mb-4">
+          Your interview preparation dashboard
         </p>
       </div>
 
-      {/* Dashboard Stats */}
-      {/* <div className="mb-10 bg-[#1A1040]/50 p-6 rounded-xl border border-[#9D4EDD]/30">
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-2xl font-semibold text-[#05FFF8]">Dashboard Overview</h2>
-            <p className="text-[#D1D7E0]/70">Your interview preparation at a glance</p>
-          </div>
-          <div className="bg-[#231651] px-6 py-4 rounded-lg border border-[#9D4EDD]/30">
-            <p className="text-[#D1D7E0]/70 text-sm">Total Companies</p>
-            <p className="text-4xl font-bold text-[#FF2A6D]">{companies.length}</p>
+      {/* Dashboard Stats - Simplified */}
+      <div className="mb-10 bg-[#1A1040]/50 p-6 rounded-xl border border-[#9D4EDD]/30">
+        <div className="flex flex-col space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-semibold text-[#05FFF8]">Dashboard Overview</h2>
+              <p className="text-[#D1D7E0]/70">Your interview preparation at a glance</p>
+            </div>
+            <div className="flex space-x-3">
+              <div className="bg-[#231651] px-5 py-3 rounded-lg border border-[#9D4EDD]/30">
+                <div className="flex items-center space-x-2">
+                  <Building2 size={18} className="text-[#FF2A6D]" />
+                  <p className="text-[#D1D7E0]/70 text-sm">Companies</p>
+                </div>
+                <p className="text-3xl font-bold text-[#FF2A6D]">{dashboardDetails.totalCompanies}</p>
+              </div>
+              <div className="bg-[#231651] px-5 py-3 rounded-lg border border-[#9D4EDD]/30">
+                <div className="flex items-center space-x-2">
+                  <Layers size={18} className="text-[#05FFF8]" />
+                  <p className="text-[#D1D7E0]/70 text-sm">Interview Rounds</p>
+                </div>
+                <p className="text-3xl font-bold text-[#05FFF8]">{dashboardDetails.totalRounds}</p>
+              </div>
+            </div>
           </div>
         </div>
-      </div> */}
+      </div>
 
       {/* Create Company Section */}
       <div className="flex justify-center mb-10">
@@ -231,7 +283,13 @@ function Dashboard() {
           )}
         </div>
         
-        {companies.length > 0 ? (
+        {isLoading ? (
+          <div className="text-center p-12 border border-dashed border-[#9D4EDD]/30 rounded-xl bg-[#1A1040]/50">
+            <div className="text-[#D1D7E0]/60">
+              <p className="text-lg">Loading companies...</p>
+            </div>
+          </div>
+        ) : companies.length > 0 ? (
           <div className="grid gap-4">
             {companies.map((company, index) => (
               <div 
@@ -284,7 +342,6 @@ function Dashboard() {
           </div>
         )}
       </div>
-      {/* <LastGenerated/> */}
     </div>
   );
 }
