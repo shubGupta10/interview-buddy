@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { PlusCircle, Building2, ChevronRight, Trash } from "lucide-react";
 import toast from "react-hot-toast";
+import LastGenerated from "@/components/LastGenerated";
 
 interface Company {
   id: string;
@@ -113,22 +114,41 @@ function Dashboard() {
       toast.error("Failed to delete company", { id: toastId });
     }
   };
+
+  const getTimeOfDay = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "morning";
+    if (hour < 18) return "afternoon";
+    return "evening";
+  };
   
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       {/* Header Section with Gradient */}
       <div className="mb-12 text-center">
-        <h1 className="text-5xl font-bold mb-2 text-white">
-          Welcome to{" "}
-          <span className="bg-gradient-to-r from-[#FF2A6D] to-[#05FFF8] text-transparent bg-clip-text">
-            InterviewBuddy
-          </span>
+      <h1 className="text-4xl md:text-5xl font-bold mb-3 text-white">
+          Good {getTimeOfDay()},{" "}
+          <span className="text-[#05FFF8] font-medium">{user?.name?.split(' ')[0] || 'there'}</span>!
         </h1>
-        <p className="text-xl text-[#D1D7E0]/80">
-          Hello, <span className="text-[#05FFF8] font-medium">{user?.name}</span>! Prepare for your next interview with AI assistance.
+        <p className="text-xl text-[#D1D7E0]/80 mb-6">
+          Your next interview success story starts here.
         </p>
       </div>
+
+      {/* Dashboard Stats */}
+      {/* <div className="mb-10 bg-[#1A1040]/50 p-6 rounded-xl border border-[#9D4EDD]/30">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-semibold text-[#05FFF8]">Dashboard Overview</h2>
+            <p className="text-[#D1D7E0]/70">Your interview preparation at a glance</p>
+          </div>
+          <div className="bg-[#231651] px-6 py-4 rounded-lg border border-[#9D4EDD]/30">
+            <p className="text-[#D1D7E0]/70 text-sm">Total Companies</p>
+            <p className="text-4xl font-bold text-[#FF2A6D]">{companies.length}</p>
+          </div>
+        </div>
+      </div> */}
 
       {/* Create Company Section */}
       <div className="flex justify-center mb-10">
@@ -200,9 +220,16 @@ function Dashboard() {
 
       {/* Display Companies */}
       <div className="max-w-3xl mx-auto">
-        <h2 className="text-2xl font-semibold mb-6 text-[#05FFF8] pl-2 border-l-4 border-[#FF2A6D]">
-          Your Companies
-        </h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-semibold text-[#05FFF8] pl-2 border-l-4 border-[#FF2A6D]">
+            Your Companies
+          </h2>
+          {companies.length > 0 && (
+            <div className="text-[#D1D7E0]/70">
+              <span className="text-[#05FFF8] font-medium">{companies.length}</span> {companies.length === 1 ? 'company' : 'companies'} found
+            </div>
+          )}
+        </div>
         
         {companies.length > 0 ? (
           <div className="grid gap-4">
@@ -257,22 +284,7 @@ function Dashboard() {
           </div>
         )}
       </div>
-      
-      {/* Help Section */}
-      {/* <div className="mt-16 max-w-3xl mx-auto p-5 rounded-xl bg-[#231651] border border-[#9D4EDD]/20">
-        <h3 className="text-xl font-medium text-[#05FFF8] mb-3">Getting Started</h3>
-        <p className="text-[#D1D7E0]/80 mb-4">
-          To begin preparing for interviews, first create a company. Then, add interview rounds and generate AI-powered interview questions.
-        </p>
-        <div className="flex justify-end">
-          <Button 
-            variant="link" 
-            className="text-[#FF2A6D] hover:text-[#FF2A6D]/80 p-0 font-medium flex items-center gap-1"
-          >
-            Learn More <ChevronRight size={16} />
-          </Button>
-        </div>
-      </div> */}
+      {/* <LastGenerated/> */}
     </div>
   );
 }
