@@ -15,7 +15,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-import { PlusCircle, Building2, ChevronRight } from "lucide-react";
+import { PlusCircle, Building2, ChevronRight, Trash } from "lucide-react";
 
 interface Company {
   id: string;
@@ -26,6 +26,8 @@ function Dashboard() {
   const [companyName, setCompanyName] = useState("");
   const [companies, setCompanies] = useState<Company[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [companyToDelete, setCompanyToDelete] = useState<string | null>(null);
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const { user } = useAuthStore();
   const session = useSession();
@@ -78,6 +80,38 @@ function Dashboard() {
     }
   };
 
+  const openDeleteConfirmation = (companyId: string) => {
+    setCompanyToDelete(companyId);
+    setIsConfirmDeleteOpen(true);
+  };
+
+  const handleDeleteCompany = async () => {
+    if (!companyToDelete || !userId) return;
+    
+    try {
+      const response = await fetch(`${backendUrl}/company/delete-company`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          userId: userId,
+          companyId: companyToDelete
+        })
+      });
+      
+      if (!response.ok) throw new Error("Failed to delete company");
+      
+      // Remove the deleted company from state
+      setCompanies(companies.filter(company => company.id !== companyToDelete));
+      setIsConfirmDeleteOpen(false);
+      setCompanyToDelete(null);
+    } catch (error: any) {
+      console.error(error.message);
+      alert("Failed to delete company: " + error.message);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       {/* Header Section with Gradient */}
@@ -125,7 +159,7 @@ function Dashboard() {
               <div className="flex justify-end pt-2">
                 <Button 
                   onClick={handleAddCompany} 
-                  className="bg-gradient-to-r from-[#FF2A6D] to-[#9D4EDD] hover:opacity-90 text-white font-medium cursor-pointer"
+                  className="bg-[#ff2a6d] hover:bg-[#d12564] text-white font-medium cursor-pointer"
                 >
                   Add Company
                 </Button>
@@ -134,6 +168,32 @@ function Dashboard() {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Confirmation Dialog for Delete */}
+      <Dialog open={isConfirmDeleteOpen} onOpenChange={setIsConfirmDeleteOpen}>
+        <DialogContent className="bg-[#231651] border border-[#9D4EDD] text-[#D1D7E0]">
+          <DialogHeader>
+            <DialogTitle className="text-[#FF2A6D] text-2xl">Confirm Deletion</DialogTitle>
+            <DialogDescription className="text-[#D1D7E0]/70">
+              Are you sure you want to delete this company? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-3 pt-4">
+            <Button 
+              onClick={() => setIsConfirmDeleteOpen(false)}
+              className="bg-[#1A1040] hover:bg-[#1A1040]/80 text-[#D1D7E0] cursor-pointer"
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleDeleteCompany} 
+              className="bg-[#ff2a6d] hover:bg-[#d12564] text-white cursor-pointer"
+            >
+              Delete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Display Companies */}
       <div className="max-w-3xl mx-auto">
@@ -157,12 +217,21 @@ function Dashboard() {
                     <p className="text-sm text-[#D1D7E0]/60"> ID: {company.id ? company.id.substring(0, 8) : "N/A"}...</p>
                   </div>
                 </div>
-                <Button 
-                  className="bg-[#05FFF8] hover:bg-[#05FFF8]/80 text-[#1A1040] font-medium px-5 flex items-center gap-1 group-hover:gap-2 transition-all duration-300 cursor-pointer" 
-                  onClick={() => { router.push(`/dashboard/rounds?companyId=${company.id}`) }}
-                >
-                  Open <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform duration-300 cursor-pointer" />
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    className="bg-[#05FFF8] hover:bg-[#05FFF8]/80 text-[#1A1040] font-medium px-4 flex items-center gap-1 group-hover:gap-2 transition-all duration-300 cursor-pointer" 
+                    onClick={() => router.push(`/dashboard/rounds?companyId=${company.id}`)}
+                  >
+                    Open <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
+                  </Button>
+
+                  <Button 
+                    className="bg-[#ff2a6d] hover:bg-[#d12564] text-white font-medium px-4 flex items-center gap-1 cursor-pointer" 
+                    onClick={() => openDeleteConfirmation(company.id)}
+                  >
+                    Delete <Trash size={16} />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>

@@ -2,7 +2,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { ChevronLeft, Loader2, Search, Award, Save, Share2, Copy, AlertCircle, Code, Layers } from "lucide-react";
+import { ChevronLeft, Loader2, Search, Award, Copy, AlertCircle, Code, Layers } from "lucide-react";
 
 interface Question {
   id: string;
@@ -71,7 +71,6 @@ function DisplayQuestions() {
     handleFetchQuestions();
   }, [companyId, roundId, language, difficulty, backendUrl]);
 
-  // Get difficulty badge color
   const getDifficultyColor = (difficulty: string) => {
     switch(difficulty.toLowerCase()) {
       case 'easy': return 'bg-green-500/20 text-green-400 border-green-500/30';
@@ -81,7 +80,6 @@ function DisplayQuestions() {
     }
   };
 
-  // Difficulty emoji
   const getDifficultyEmoji = (difficulty: string) => {
     switch(difficulty.toLowerCase()) {
       case 'easy': return '🟢';
@@ -91,12 +89,10 @@ function DisplayQuestions() {
     }
   };
 
-  // Filter questions based on search term
   const filteredQuestions = questions.filter(q => 
     q.question.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Copy question to clipboard
   const copyToClipboard = (question: string, id: string) => {
     navigator.clipboard.writeText(question);
     setCopiedId(id);
@@ -192,7 +188,7 @@ function DisplayQuestions() {
                 <div className="flex space-x-2">
                   <button 
                     onClick={() => copyToClipboard(q.question, q.id)}
-                    className="p-2 text-[#D1D7E0]/70 hover:text-[#05FFF8] rounded-full transition-colors"
+                    className="p-2 text-[#D1D7E0]/70 hover:text-[#05FFF8] rounded-full transition-colors cursor-pointer"
                     title="Copy question"
                   >
                     {copiedId === q.id ? (
@@ -201,18 +197,12 @@ function DisplayQuestions() {
                       <Copy className="h-4 w-4" />
                     )}
                   </button>
-                  <button 
-                    className="p-2 text-[#D1D7E0]/70 hover:text-[#9D4EDD] rounded-full transition-colors"
-                    title="Save question"
-                  >
-                    <Save className="h-4 w-4" />
-                  </button>
-                  <button 
-                    className="p-2 text-[#D1D7E0]/70 hover:text-[#FF2A6D] rounded-full transition-colors"
+                  {/* <button 
+                    className="p-2 text-[#D1D7E0]/70 hover:text-[#FF2A6D] rounded-full transition-colors cursor-pointer"
                     title="Share question"
                   >
                     <Share2 className="h-4 w-4" />
-                  </button>
+                  </button> */}
                 </div>
               </div>
               

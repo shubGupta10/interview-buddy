@@ -158,7 +158,7 @@ export default function CompanyRounds() {
           
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-[#FF2A6D] hover:bg-[#FF2A6D]/80 text-white font-medium flex items-center gap-2 px-5 py-5 shadow-lg hover:shadow-[#FF2A6D]/20 transition-all duration-300">
+              <Button className="bg-[#ff2a6d] hover:bg-[#d12564] text-white font-medium flex items-center gap-2 px-5 py-5 shadow-lg hover:shadow-[#FF2A6D]/20 transition-all duration-300 cursor-pointer">
                 <PlusCircle size={18} />
                 Add New Round
               </Button>
@@ -243,7 +243,7 @@ export default function CompanyRounds() {
                     onClick={() => {
                       router.push(`/dashboard/rounds/generate-question?companyId=${companyId}&roundId=${round.id}&roundName=${round.roundName}`);
                     }}
-                    className="bg-[#05FFF8] hover:bg-[#05FFF8]/80 text-[#1A1040] font-medium px-4 flex items-center gap-1 group-hover:gap-2 transition-all duration-300"
+                    className="bg-[#05FFF8] hover:bg-[#05FFF8]/80 text-[#1A1040] font-medium px-4 flex items-center gap-1 group-hover:gap-2 transition-all duration-300 cursor-pointer"
                   >
                     Open this round <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
                   </Button>
