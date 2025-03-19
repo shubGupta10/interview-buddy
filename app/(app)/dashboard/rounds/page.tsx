@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PlusCircle, Loader2, ChevronRight, Calendar, AlertCircle, History, Trash2 } from "lucide-react";
+import { PlusCircle, Loader2, ChevronRight, Calendar, AlertCircle, History, Trash2, AlertTriangle } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function CompanyRounds() {
@@ -82,7 +82,15 @@ export default function CompanyRounds() {
   
         toast.success("Successfully fetched interview rounds!", { id: toastId });
       } catch (error) {
-        toast.error("Error fetching company rounds. Please try again.", { id: toastId });
+        toast("Warning: Can't able to fetch rounds, Try to create a new!", {
+          id: toastId,
+          icon: <AlertTriangle className="text-yellow-500 w-5 h-5" />, 
+          style: {
+            background: "#fef3c7", 
+            color: "#92400e",
+            border: "1px solid #fbbf24",
+          },
+        });
         console.error("Error fetching data:", error);
         setError("Failed to load interview rounds.");
       } finally {
@@ -152,9 +160,9 @@ export default function CompanyRounds() {
       // Remove the deleted round from state
       setRounds(rounds.filter(round => round.id !== roundToDelete.id));
       
-      toast.success(`✅ ${roundToDelete.name} deleted successfully!`, { id: toastId });
+      toast.success(` ${roundToDelete.name} deleted successfully!`, { id: toastId });
     } catch (error) {
-      toast.error("❌ Failed to delete interview round. Please try again.", { id: toastId });
+      toast.error(" Failed to delete interview round. Please try again.", { id: toastId });
       console.error("Error deleting round:", error);
       setError("Failed to delete interview round.");
     } finally {
