@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Book, Code, Filter, X, Award, Loader2, Search, ChevronLeft, Layers, AlertCircle } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import toast from "react-hot-toast";
 
 type Question = {
     id: string;
@@ -70,6 +71,7 @@ const QuestionCategories: React.FC<Props> = () => {
                     setError("Failed to fetch questions");
                 }
             } catch (error) {
+                toast.error("No prev questions found")
                 console.error("Error fetching questions:", error);
                 setError("Error loading questions. Please try again.");
             } finally {

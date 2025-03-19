@@ -25,6 +25,7 @@ import {
     Building,
     Target
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 function GenerateQuestions() {
     const { setQuestions } = useQuestionStore();
@@ -92,7 +93,6 @@ function GenerateQuestions() {
             });
 
             const responseText = await response.text();
-            console.log("Raw Response:", responseText);
 
             if (!response.ok) {
                 throw new Error("Failed to generate questions.");
@@ -101,8 +101,10 @@ function GenerateQuestions() {
             const data = JSON.parse(responseText);
             setQuestions(data.questions);
             router.push(`/display-questions?roundId=${roundId}&roundName=${roundName}&companyId=${companyId}&difficulty=${difficulty}${language ? `&language=${language}` : ""}`);
+            toast.success("Your questions are ready! Good luck with your preparation.")
         } catch (error) {
             console.error("Error generating questions:", error);
+            toast.error("Oops! We couldn't generate your questions. Please check your selections and try again.")
             setError("Error generating questions. Please try again.");
         } finally {
             setIsLoading(false);

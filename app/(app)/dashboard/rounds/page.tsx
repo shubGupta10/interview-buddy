@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PlusCircle, Loader2, ChevronRight, Calendar, AlertCircle } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function CompanyRounds() {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -37,7 +38,6 @@ export default function CompanyRounds() {
   const [companyName, setCompanyName] = useState("Company");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Predefined round options
   const roundOptions = [
     { value: "Technical Interview", label: "Technical Interview" },
     { value: "Machine Coding", label: "Machine Coding" },
@@ -49,71 +49,80 @@ export default function CompanyRounds() {
 
   useEffect(() => {
     if (!companyId) return;
-
+  
     const fetchCompanyData = async () => {
+      const toastId = toast.loading("Fetching company rounds...");
+  
       try {
         setLoading(true);
-        
-        // Fetch company name
+  
         const companyResponse = await fetch(`${backendUrl}/company/fetch-company?companyId=${companyId}`, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
-
+  
         if (companyResponse.ok) {
           const companyData = await companyResponse.json();
           setCompanyName(companyData.company?.companyName || "Company");
         }
-
-        // Fetch rounds
+  
         const roundsResponse = await fetch(`${backendUrl}/company/fetch-rounds?companyId=${companyId}`, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
-
+  
         if (!roundsResponse.ok) throw new Error("Failed to fetch rounds");
-
+  
         const data = await roundsResponse.json();
         setRounds(data.rounds || []);
+  
+        toast.success("Successfully fetched interview rounds!", { id: toastId });
       } catch (error) {
+        toast.error("Error fetching company rounds. Please try again.", { id: toastId });
         console.error("Error fetching data:", error);
         setError("Failed to load interview rounds.");
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchCompanyData();
   }, [companyId, backendUrl]);
+  
 
   const handleAddRound = async () => {
     if (!selectedRound || !companyId) return;
-
+    const toastId = toast.loading("Adding new interview round...");
+  
     try {
       setLoading(true);
       setError("");
-
+  
       const response = await fetch(`${backendUrl}/company/create-round`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ companyId, roundName: selectedRound }),
       });
-
+  
       if (!response.ok) throw new Error("Failed to add round");
-
+  
       const data = await response.json();
       const newRound = { id: data.roundId, roundName: selectedRound };
-
+  
       setRounds([...rounds, newRound]);
       setSelectedRound("");
       setIsDialogOpen(false);
+  
+      toast.success(`✅ ${selectedRound} added successfully!`, { id: toastId });
     } catch (error) {
+      toast.error("❌ Failed to add interview round. Please try again.", { id: toastId });
       console.error("Error adding round:", error);
       setError("Failed to add interview round.");
     } finally {
       setLoading(false);
     }
   };
+  
 
   // Function to get round icon based on round name
   const getRoundIcon = (roundName: string) => {
@@ -174,12 +183,12 @@ export default function CompanyRounds() {
                 <div>
                   <Label htmlFor="round-select" className="text-[#D1D7E0] mb-2 block">Round Type</Label>
                   <Select value={selectedRound} onValueChange={setSelectedRound}>
-                    <SelectTrigger className="w-full bg-[#1A1040] border-[#9D4EDD]/50 text-[#D1D7E0] focus:ring-[#05FFF8]/20 focus:border-[#05FFF8]">
+                    <SelectTrigger className="cursor-pointer w-full bg-[#1A1040] border-[#9D4EDD]/50 text-[#D1D7E0] focus:ring-[#05FFF8]/20 focus:border-[#05FFF8]">
                       <SelectValue placeholder="Select a round type" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#231651] border-[#9D4EDD]/50 text-[#D1D7E0]">
+                    <SelectContent className="cursor-pointer bg-[#231651] border-[#9D4EDD]/50 text-[#D1D7E0]">
                       {roundOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value} className="focus:bg-[#9D4EDD]/20 focus:text-white">
+                        <SelectItem key={option.value} value={option.value} className="focus:bg-[#9D4EDD]/20 focus:text-white cursor-pointer">
                           {option.label}
                         </SelectItem>
                       ))}
@@ -189,7 +198,7 @@ export default function CompanyRounds() {
 
                 <Button
                   onClick={handleAddRound}
-                  className="w-full bg-gradient-to-r from-[#FF2A6D] to-[#9D4EDD] hover:opacity-90 text-white font-medium py-5"
+                  className="w-full bg-[#ff2a6d] hover:bg-[#d12564] text-white font-medium py-5 cursor-pointer"
                   disabled={loading || !selectedRound}
                 >
                   {loading ? (

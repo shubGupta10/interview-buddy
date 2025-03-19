@@ -3,6 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { ChevronLeft, Loader2, Search, Award, Copy, AlertCircle, Code, Layers } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface Question {
   id: string;
@@ -52,6 +53,7 @@ function DisplayQuestions() {
         }
 
         const data = await response.json();
+        toast.success("Questions fetched successfully");
         console.log("Fetched Questions:", data.questions);
         
         if (Array.isArray(data.questions)) {
@@ -61,6 +63,7 @@ function DisplayQuestions() {
           console.error("Invalid questions data format:", data);
         }
       } catch (error) {
+        toast.error("Failed to fetch questions.")
         console.error("Failed to fetch questions", error);
         setError("Failed to load questions. Please try again.");
       } finally {

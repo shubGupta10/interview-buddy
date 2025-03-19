@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { AlertCircle, MessageSquare, Zap } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import toast from "react-hot-toast"
+
 
 export default function RegisterPage (){
   const router = useRouter()
@@ -51,7 +53,6 @@ export default function RegisterPage (){
         throw new Error(data.message || "Registration failed")
       }
 
-      // After successful registration, sign in
       const result = await signIn("credentials", {
         redirect: false,
         email: formData.email,
@@ -63,10 +64,12 @@ export default function RegisterPage (){
       }
 
       router.push("/")
+      toast.success("Your account is ready! Taking you to the dashboard...")
       setTimeout(() => {
         window.location.reload()
       }, 1500)
     } catch (error) {
+      toast.error("Oops! We couldn't create your account. Try again in a moment.")
       setError(error instanceof Error ? error.message : "Registration failed")
     } finally {
       setIsLoading(false)
@@ -80,6 +83,7 @@ export default function RegisterPage (){
         redirect: true,
       })
       if (result?.error) {
+        toast.error("Google sign-up did not work. Try again or use another method!")
         setError("Failed to sign in with Google")
       }
     } catch (error) {

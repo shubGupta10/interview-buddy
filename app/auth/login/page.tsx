@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { AlertCircle, Zap } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import toast from "react-hot-toast"
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({ email: "", password: "" })
@@ -37,18 +38,20 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
+        toast.error("Oops! That email or password does not match our records. Try again!")
         setError(result.error)
       } else {
         const response = await fetch("/api/auth/session")
         const sessionData = await response.json()
-        console.log(sessionData?.user);
-
         router.push("/")
+        toast.success(" Welcome back! Redirecting to your dashboard...");
         setTimeout(() => {
           window.location.reload()
         }, 1500)
+        
       }
     } catch (err) {
+      toast.error('Something went wrong on our end. Please refresh and try again.')
       setError("An unexpected error occurred. Please try again.")
     } finally {
       setIsLoading(false)
@@ -61,7 +64,9 @@ export default function LoginPage() {
         callbackUrl: "/",
       })
 
+
       if (result?.error) {
+        toast.error("Google login didn’t work. Try again or use another method!")
         setError("Failed to sign in with Google")
       }
     } catch (error) {
@@ -76,6 +81,7 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
+        toast.error("GitHub sign-in didn’t work. Double-check your credentials or try again!")
         setError("Failed to sign in with GitHub")
       }
     } catch (error) {

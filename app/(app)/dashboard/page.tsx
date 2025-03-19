@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { PlusCircle, Building2, ChevronRight, Trash } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface Company {
   id: string;
@@ -57,26 +58,28 @@ function Dashboard() {
     };
 
     fetchAllCompanies();
-  }, [userId, backendUrl]);
+  }, [userId]);
 
   const handleAddCompany = async () => {
-    if (!companyName.trim()) return alert("Company name cannot be empty!");
-
+    if (!companyName.trim()) return toast.error("Company name cannot be empty!");
+  
+    const toastId = toast.loading("Adding company...");
     try {
       const response = await fetch(`${backendUrl}/company/create-company`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, companyName }),
       });
-
+  
       if (!response.ok) throw new Error("Failed to create company");
-
+  
       const newCompany = await response.json();
       setCompanies((prev) => [...prev, newCompany]);
       setCompanyName("");
       setIsDialogOpen(false);
+      toast.success("Company added successfully", { id: toastId });
     } catch (error: any) {
-      console.error(error.message);
+      toast.error(error.message || "Failed to add company", { id: toastId });
     }
   };
 
@@ -88,29 +91,29 @@ function Dashboard() {
   const handleDeleteCompany = async () => {
     if (!companyToDelete || !userId) return;
     
+    const toastId = toast.loading("Deleting company...");
     try {
       const response = await fetch(`${backendUrl}/company/delete-company`, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          userId: userId,
-          companyId: companyToDelete
-        })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, companyId: companyToDelete }),
       });
-      
+  
       if (!response.ok) throw new Error("Failed to delete company");
-      
-      // Remove the deleted company from state
+  
+      const deletedCompany = companies.find(c => c.id === companyToDelete);
       setCompanies(companies.filter(company => company.id !== companyToDelete));
       setIsConfirmDeleteOpen(false);
       setCompanyToDelete(null);
+  
+      toast.success("Company deleted", {
+        id: toastId,
+      });
     } catch (error: any) {
-      console.error(error.message);
-      alert("Failed to delete company: " + error.message);
+      toast.error("Failed to delete company", { id: toastId });
     }
   };
+  
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
