@@ -95,17 +95,17 @@ function Navbar() {
                 Dashboard
               </Link>
               <Link
-                href="/features"
+                href="/how-to-use"
                 className="px-3 py-2 text-[#D1D7E0] hover:text-[#05FFF8] transition-colors"
               >
-                Features
+                How to Use
               </Link>
-              <Link
+              {/* <Link
                 href="/pricing"
                 className="px-3 py-2 text-[#D1D7E0] hover:text-[#05FFF8] transition-colors"
               >
                 Pricing
-              </Link>
+              </Link> */}
               {isMounted && currentUser?.isAdmin === true && (
                 <Link
                   href="/admin/dashboard"
@@ -212,19 +212,19 @@ function Navbar() {
                       Profile
                     </Link>
                     <Link
-                      href="/features"
+                      href="/how-to-use"
                       className="block px-3 py-2 rounded-md text-[#D1D7E0] hover:text-[#05FFF8] hover:bg-[#231651] transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Features
+                      How to Use
                     </Link>
-                    <Link
+                    {/* <Link
                       href="/pricing"
                       className="block px-3 py-2 rounded-md text-[#D1D7E0] hover:text-[#05FFF8] hover:bg-[#231651] transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Pricing
-                    </Link>
+                    </Link> */}
                     {isMounted && currentUser?.isAdmin === true && (
                       <Link
                         href="/admin/dashboard"
