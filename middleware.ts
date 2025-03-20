@@ -10,7 +10,7 @@ export default withAuth(
             authorized: ({token, req}) => {
                 const {pathname} = req.nextUrl;
 
-                const publicRoutes = ["/", "/auth/login", "/auth/register"];
+                const publicRoutes = ["/", "/auth/login", "/auth/register", "/how-to-use"];
                 if(publicRoutes.includes(pathname)){
                     return true;
                 }

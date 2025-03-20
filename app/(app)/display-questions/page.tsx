@@ -2,12 +2,19 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { ChevronLeft, Loader2, Search, Award, Copy, AlertCircle, Code, Layers } from "lucide-react";
+import { ChevronLeft, Loader2, Search, Award, Copy, AlertCircle, Code, Layers, ExternalLink } from "lucide-react";
 import toast from "react-hot-toast";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface Question {
   id: string;
   question: string;
+  answer: string;
   difficulty: string;
   language?: string;
 }
@@ -181,48 +188,66 @@ function DisplayQuestions() {
           {filteredQuestions.map((q, index) => (
             <div
               key={q.id}
-              className="p-5 bg-gradient-to-br from-[#1A1040] to-[#231651] rounded-xl border border-[#9D4EDD]/30 shadow-md hover:shadow-lg hover:shadow-[#9D4EDD]/10 transition-all duration-300"
+              className="bg-gradient-to-br from-[#1A1040] to-[#231651] rounded-xl border border-[#9D4EDD]/30 shadow-md hover:shadow-lg hover:shadow-[#9D4EDD]/10 transition-all duration-300"
             >
-              <div className="flex justify-between items-start mb-3">
-                <div className="flex items-center">
-                  <span className="text-[#05FFF8] font-medium mr-2">Q{index + 1}.</span>
-                  <span className="mr-2">{getDifficultyEmoji(q.difficulty)}</span>
-                </div>
-                <div className="flex space-x-2">
-                  <button 
-                    onClick={() => copyToClipboard(q.question, q.id)}
-                    className="p-2 text-[#D1D7E0]/70 hover:text-[#05FFF8] rounded-full transition-colors cursor-pointer"
-                    title="Copy question"
-                  >
-                    {copiedId === q.id ? (
-                      <span className="text-xs text-[#05FFF8]">Copied!</span>
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
-                  </button>
-                  {/* <button 
-                    className="p-2 text-[#D1D7E0]/70 hover:text-[#FF2A6D] rounded-full transition-colors cursor-pointer"
-                    title="Share question"
-                  >
-                    <Share2 className="h-4 w-4" />
-                  </button> */}
-                </div>
-              </div>
-              
-              <p className="text-[#D1D7E0] font-medium mb-3">{q.question}</p>
-              
-              <div className="flex flex-wrap gap-2 mt-3">
-                <span className={`px-2 py-1 text-xs rounded-full flex items-center ${getDifficultyColor(q.difficulty)}`}>
-                  <Award className="h-3 w-3 mr-1" />
-                  {q.difficulty}
-                </span>
-                
-                {q.language && (
-                  <span className="px-2 py-1 text-xs rounded-full bg-[#9D4EDD]/20 text-[#9D4EDD] border border-[#9D4EDD]/30">
-                    {q.language}
-                  </span>
-                )}
-              </div>
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value={q.id} className="border-none">
+                  <div className="p-5">
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex items-center">
+                        <span className="text-[#05FFF8] font-medium mr-2">Q{index + 1}.</span>
+                        <span className="mr-2">{getDifficultyEmoji(q.difficulty)}</span>
+                      </div>
+                      <div className="flex space-x-2">
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            copyToClipboard(q.question, q.id);
+                          }}
+                          className="p-2 text-[#D1D7E0]/70 hover:text-[#05FFF8] rounded-full transition-colors cursor-pointer"
+                          title="Copy question"
+                        >
+                          {copiedId === q.id ? (
+                            <span className="text-xs text-[#05FFF8]">Copied!</span>
+                          ) : (
+                            <Copy className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <AccordionTrigger className="hover:no-underline py-0">
+                      <p className="text-[#D1D7E0] font-medium text-left">{q.question}</p>
+                    </AccordionTrigger>
+                    
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      <span className={`px-2 py-1 text-xs rounded-full flex items-center ${getDifficultyColor(q.difficulty)}`}>
+                        <Award className="h-3 w-3 mr-1" />
+                        {q.difficulty}
+                      </span>
+                      
+                      {q.language && (
+                        <span className="px-2 py-1 text-xs rounded-full bg-[#9D4EDD]/20 text-[#9D4EDD] border border-[#9D4EDD]/30">
+                          {q.language}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <AccordionContent className="px-5 pb-5 pt-1 text-[#D1D7E0]/90">
+                    <div className="bg-[#1A1040]/50 p-4 rounded-lg border border-[#9D4EDD]/20 mb-3">
+                      <p className="whitespace-pre-line">{q.answer}</p>
+                    </div>
+                    
+                    <button 
+                      className="mt-2 flex items-center gap-1 text-sm py-1 px-3 bg-[#9D4EDD]/20 text-[#9D4EDD] hover:bg-[#9D4EDD]/30 transition-colors rounded-lg border border-[#9D4EDD]/30"
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      Explain
+                    </button>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
           ))}
         </div>

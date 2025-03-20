@@ -348,10 +348,10 @@ export default function CompanyRounds() {
                 </div>
                 
                 <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#9D4EDD]/20">
-                  <div className="flex items-center text-[#D1D7E0]/60">
+                  {/* <div className="flex items-center text-[#D1D7E0]/60">
                     <Calendar size={16} className="mr-2" />
                     <span className="text-sm">Round ID: {round.id.substring(0, 8)}...</span>
-                  </div>
+                  </div> */}
                   
                   <div className="flex gap-3">
                     {/* Previous Questions Button */}

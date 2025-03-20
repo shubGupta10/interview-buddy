@@ -3,8 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Brain, Target, Zap, Code, Users, MessageSquare, CheckCircle2, ArrowUpRight, Sparkles, Layout, Shield, Clock, GraduationCap, Briefcase } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 function Home() {
+  const router = useRouter()
   const rounds = ["Tech Round", "Coding Round", "Behaviour Round", "System Design", "HR Round"];
   const [index, setIndex] = useState(0);
   const [animationState, setAnimationState] = useState("visible");
@@ -60,11 +62,10 @@ function Home() {
                 InterviewBuddy helps you prepare for technical, behavioral, and system design interviews with customized questions tailored to your target companies and roles.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 items-center justify-center lg:justify-start">
-                <button className="w-full sm:w-auto bg-[#FF2A6D] hover:bg-[#FF2A6D]/90 text-white px-8 py-4 rounded-xl text-lg font-semibold flex items-center justify-center gap-2 group transition-all duration-300 transform hover:translate-y-[-2px]">
+                <button onClick={() => { router.push("/dashboard") }} className="cursor-pointer w-full sm:w-auto bg-[#FF2A6D] hover:bg-[#FF2A6D]/90 text-white px-8 py-4 rounded-xl text-lg font-semibold flex items-center justify-center gap-2 group transition-all duration-300 transform hover:translate-y-[-2px]">
                   Get Started
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
-                <button className="w-full sm:w-auto px-8 py-4 rounded-xl text-lg font-semibold border border-[#9D4EDD]/30 hover:border-[#9D4EDD] flex items-center justify-center gap-2 transition-all duration-300 transform hover:translate-y-[-2px] hover:bg-[#231651]">
+                <button onClick={() => { router.push("/how-to-use") }} className="cursor-pointer w-full sm:w-auto px-8 py-4 rounded-xl text-lg font-semibold border border-[#9D4EDD]/30 hover:border-[#9D4EDD] flex items-center justify-center gap-2 transition-all duration-300 transform hover:translate-y-[-2px] hover:bg-[#231651]">
                   Learn More
                 </button>
               </div>
@@ -196,7 +197,7 @@ function Home() {
             ))}
           </div>
           <div className="flex justify-center mt-12">
-            <Link href="/how-to-use" className="bg-[#231651] hover:bg-[#1A1040] text-[#D1D7E0] px-8 py-4 rounded-xl text-lg font-semibold flex items-center justify-center gap-2 group transition-all duration-300 transform hover:translate-y-[-2px] border border-[#9D4EDD]/30 hover:border-[#9D4EDD]">
+            <Link href="/how-to-use" className="bg-[#FF2A6D] hover:bg-[#ff2a4e] text-white px-8 py-4 rounded-xl text-lg font-semibold flex items-center justify-center gap-2 group transition-all duration-300 transform hover:translate-y-[-2px]">
               Detailed Instructions
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
@@ -297,7 +298,7 @@ function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="relative rounded-3xl overflow-hidden">
             <div className="absolute inset-0 bg-[#1A1040]"></div>
-            <div className="absolute inset-0 bg-gradient-to-r from-[#FF2A6D]/20 via-[#9D4EDD]/20 to-[#05FFF8]/20"></div>
+            <div className="absolute inset-0 bg-transparent"></div>
             <div className="relative border border-[#9D4EDD]/20 rounded-3xl p-12 md:p-20">
               <div className="max-w-2xl mx-auto text-center">
                 <h2 className="text-4xl font-bold mb-6">Ready to start your interview preparation?</h2>
@@ -305,7 +306,7 @@ function Home() {
                   Join InterviewBuddy today and take your interview preparation to the next level with AI-powered, tailored questions.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <button className="bg-[#FF2A6D] hover:bg-[#FF2A6D]/90 text-white px-8 py-4 rounded-xl text-lg font-semibold flex items-center justify-center gap-2 group transition-all duration-300 transform hover:translate-y-[-2px]">
+                  <button className="bg-[#FF2A6D] hover:bg-[#FF2A6D]/90 text-white px-8 py-4 rounded-xl text-lg font-semibold flex items-center justify-center gap-2 group transition-all duration-300 transform hover:translate-y-[-2px] cursor-pointer">
                     Get Started
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </button>
@@ -314,29 +315,6 @@ function Home() {
             </div>
           </div>
         </div>
-
-        {/* Footer */}
-        <footer className="bg-[#1A1040] border-t border-[#9D4EDD]/20 py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <div className="mb-6 md:mb-0">
-                <span className="text-2xl font-bold text-[#FF2A6D]">InterviewBuddy</span>
-                <p className="text-sm text-[#D1D7E0]/70 mt-2">AI-powered interview preparation platform</p>
-              </div>
-              <div className="flex flex-wrap gap-8 justify-center">
-                <div className="flex flex-col gap-2">
-                  <h4 className="font-semibold mb-2">Quick Links</h4>
-                  <a href="#features" className="text-sm text-[#D1D7E0]/70 hover:text-[#05FFF8]">Features</a>
-                  <a href="#how-it-works" className="text-sm text-[#D1D7E0]/70 hover:text-[#05FFF8]">How It Works</a>
-                  <a href="/how-to-use" className="text-sm text-[#D1D7E0]/70 hover:text-[#05FFF8]">Instructions</a>
-                </div>
-              </div>
-            </div>
-            <div className="mt-8 pt-8 border-t border-[#9D4EDD]/20 text-center text-sm text-[#D1D7E0]/50">
-              © {new Date().getFullYear()} InterviewBuddy. All rights reserved.
-            </div>
-          </div>
-        </footer>
       </div>
     </div>
   );
