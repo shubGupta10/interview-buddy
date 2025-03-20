@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, {  useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PlusCircle, Loader2, ChevronRight, Calendar, AlertCircle, History, Trash2, AlertTriangle } from "lucide-react";
+import { PlusCircle, Loader2, ChevronRight, AlertCircle, History, Trash2, AlertTriangle } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function CompanyRounds() {

@@ -5,6 +5,8 @@ import SessionProviderWrapper from "@/components/SessionProviderWrapper";
 import BackgroundWrapper from "@/components/BackgroundWrapper";
 import {Toaster} from 'react-hot-toast'
 import Footer from "@/components/Footer";
+import { Suspense } from "react";
+import LoadingFeedback from "@/components/LoaderFallback";
 
 
 export const metadata: Metadata = {
@@ -58,7 +60,9 @@ export default function RootLayout({
               position="bottom-right"
               reverseOrder={false}
             />
+            <Suspense  fallback={<LoadingFeedback/>}>
             {children}
+            </Suspense>
             <Footer/>
           </BackgroundWrapper>
         </body>

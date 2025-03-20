@@ -19,20 +19,26 @@ type Question = {
 }
 
 type Props = {
-  companyId?: string
-  roundId?: string
-  roundName?: string
+  params?: {
+    companyId?: string
+    roundId?: string
+    roundName?: string
+  }
+  searchParams?: {
+    companyId?: string
+    roundId?: string
+    roundName?: string
+  }
 }
 
-const QuestionCategories: React.FC<Props> = ({
-  companyId: propCompanyId,
-  roundId: propRoundId,
-  roundName: propRoundName,
-}) => {
-  const searchQuery = useSearchParams()
-  const companyId = propCompanyId || searchQuery.get("companyId")
-  const roundId = propRoundId || searchQuery.get("roundId")
-  const roundName = propRoundName || searchQuery.get("roundName")
+
+const QuestionCategories = () => {
+  const router = useRouter()
+  const urlSearchParams = useSearchParams()
+  
+  const companyId = urlSearchParams.get("companyId") || ""
+  const roundId = urlSearchParams.get("roundId") || ""
+  const roundName = urlSearchParams.get("roundName") || ""
 
   const [questions, setQuestions] = useState<Question[]>([])
   const [categorizedQuestions, setCategorizedQuestions] = useState<Record<string, Question[]>>({})
@@ -44,7 +50,6 @@ const QuestionCategories: React.FC<Props> = ({
   const [explainDialogOpen, setExplainDialogOpen] = useState(false)
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null)
 
-  const router = useRouter()
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL
 
   useEffect(() => {
@@ -418,4 +423,3 @@ const QuestionCategories: React.FC<Props> = ({
 }
 
 export default QuestionCategories
-

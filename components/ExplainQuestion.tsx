@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState } from 'react';
 import { Book, X, List, Lightbulb, Code, FileText, Loader2, Copy, Check, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
