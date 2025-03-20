@@ -2,7 +2,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { ChevronLeft, Loader2, Search, Award, Copy, AlertCircle, Code, Layers, ExternalLink } from "lucide-react";
+import { ChevronLeft, Loader2, Search, Award, Copy, AlertCircle, Code, Layers, ExternalLink, Book } from "lucide-react";
 import toast from "react-hot-toast";
 import {
   Accordion,
@@ -10,6 +10,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import ExplainQuestionComponent from "@/components/ExplainQuestion";
+import { Button } from "@/components/ui/button";
 
 interface Question {
   id: string;
@@ -25,6 +27,8 @@ function DisplayQuestions() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [explainDialogOpen, setExplainDialogOpen] = useState(false);
+  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
   
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const searchQuery = useSearchParams();
@@ -61,7 +65,6 @@ function DisplayQuestions() {
 
         const data = await response.json();
         toast.success("Questions fetched successfully");
-        console.log("Fetched Questions:", data.questions);
         
         if (Array.isArray(data.questions)) {
           setQuestions(data.questions);
@@ -106,7 +109,13 @@ function DisplayQuestions() {
   const copyToClipboard = (question: string, id: string) => {
     navigator.clipboard.writeText(question);
     setCopiedId(id);
+    toast.success("Question copied to clipboard!");
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleExplain = (question: Question) => {
+    setSelectedQuestion(question);
+    setExplainDialogOpen(true);
   };
 
   return (
@@ -148,7 +157,7 @@ function DisplayQuestions() {
           </div>
           
           <p className="text-[#D1D7E0]/80 text-sm">
-            Study these questions to ace your upcoming interview. You can search, copy, or save questions for later review.
+            Study these questions to ace your upcoming interview. Click on a question to see its answer, use the Explain feature for detailed breakdowns, or copy questions for later review.
           </p>
         </div>
         
@@ -217,7 +226,7 @@ function DisplayQuestions() {
                     </div>
                     
                     <AccordionTrigger className="cursor-pointer hover:no-underline py-0">
-                      <p className="text-[#D1D7E0] font-medium text-left">{q.question}</p>
+                      <p className="text-[#D1D7E0] font-medium text-left cursor-pointer hover:text-[#05FFF8]/80 transition-colors">{q.question}</p>
                     </AccordionTrigger>
                     
                     <div className="flex flex-wrap gap-2 mt-3">
@@ -234,23 +243,42 @@ function DisplayQuestions() {
                     </div>
                   </div>
                   
-                  <AccordionContent className="cursor-pointer px-5 pb-5 pt-1 text-[#D1D7E0]/90">
-                    <div className="bg-[#1A1040]/50 p-4 rounded-lg border border-[#9D4EDD]/20 mb-3">
-                      <p className="whitespace-pre-line">{q.answer}</p>
+                  <AccordionContent className="px-5 pb-5 pt-1 text-[#D1D7E0]/90">
+                    <div className="mt-4 pt-4 border-t border-[#9D4EDD]/20">
+                      <div className="flex items-center mb-2">
+                        <Book className="h-4 w-4 text-[#05FFF8] mr-2" />
+                        <h3 className="text-[#05FFF8] font-medium">Answer:</h3>
+                      </div>
+                      <div className="bg-[#1A1040]/50 p-4 rounded-lg border border-[#9D4EDD]/20 mb-4">
+                        <p className="whitespace-pre-line">{q.answer || "No official answer provided for this question."}</p>
+                      </div>
+                      
+                      <div className="mt-4 flex justify-end">
+                        <Button
+                          onClick={() => handleExplain(q)}
+                          className="bg-[#FF2A6D] text-white border border-[#ff2a4a] hover:bg-[#ff2a4a] transition-colors cursor-pointer"
+                        >
+                          <Code className="h-4 w-4 mr-2" />
+                          Explain
+                        </Button>
+                      </div>
                     </div>
-                    
-                    <button 
-                      className="mt-2 flex items-center gap-1 text-sm py-1 px-3 bg-[#9D4EDD]/20 text-[#9D4EDD] hover:bg-[#9D4EDD]/30 transition-colors rounded-lg border border-[#9D4EDD]/30"
-                    >
-                      <ExternalLink className="h-3 w-3" />
-                      Explain
-                    </button>
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
             </div>
           ))}
         </div>
+      )}
+      
+      {/* Explain Question Dialog */}
+      {selectedQuestion && (
+        <ExplainQuestionComponent
+          question={selectedQuestion.question}
+          questionId={selectedQuestion.id}
+          isOpen={explainDialogOpen}
+          onClose={() => setExplainDialogOpen(false)}
+        />
       )}
       
       {/* Footer */}

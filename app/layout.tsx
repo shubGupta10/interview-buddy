@@ -7,6 +7,7 @@ import {Toaster} from 'react-hot-toast'
 import Footer from "@/components/Footer";
 import { Suspense } from "react";
 import LoadingFeedback from "@/components/LoaderFallback";
+import { Analytics } from "@vercel/analytics/react"
 
 
 export const metadata: Metadata = {
@@ -61,6 +62,7 @@ export default function RootLayout({
               reverseOrder={false}
             />
             <Suspense  fallback={<LoadingFeedback/>}>
+            <Analytics/>
             {children}
             </Suspense>
             <Footer/>

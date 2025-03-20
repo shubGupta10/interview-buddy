@@ -102,7 +102,6 @@ const QuestionCategories = () => {
   }, [backendUrl, companyId, roundId, selectedCategory, selectedDifficulty])
 
   const handleCategorySelect = (language: string) => {
-    // If the same category is clicked again, toggle it off
     if (selectedCategory === language) {
       setSelectedCategory(null)
     } else {

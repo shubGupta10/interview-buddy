@@ -134,14 +134,14 @@ function Navbar() {
           <div className="flex items-center space-x-4">
             {user ? (
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+                <DropdownMenuTrigger asChild className="cursor-pointer">
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="relative rounded-md bg-[#231651] border border-[#FF2A6D]/30 text-white hover:bg-[#231651]/80 hover:text-[#05FFF8] transition-all"
+                    className="cursor-pointer relative rounded-md bg-[#231651] border border-[#FF2A6D]/30 text-white hover:bg-[#231651]/80 hover:text-[#05FFF8] transition-all"
                   >
-                    <span className="sr-only">Open user menu</span>
-                    <div className="flex items-center gap-x-2">
+                    <span className="sr-only cursor-pointer">Open user menu</span>
+                    <div className="cursor-pointer flex items-center gap-x-2">
                       <span className="text-sm truncate">{currentUser?.name || user?.name}</span>
                       <div className="h-6 w-6 rounded-full bg-[#9D4EDD]/10 p-1 text-[#9D4EDD] flex-shrink-0">
                         <User className="h-4 w-4" />
@@ -152,7 +152,7 @@ function Navbar() {
                 <DropdownMenuContent align="end" className="w-48 bg-[#231651] text-white border-[#FF2A6D]/30">
                   <DropdownMenuItem
                     onClick={() => router.push("/profile")}
-                    className="hover:bg-[#231651]/80 hover:text-[#05FFF8]"
+                    className="hover:bg-[#231651]/80 hover:text-[#05FFF8] cursor-pointer"
                   >
                     Profile
                   </DropdownMenuItem>
@@ -162,7 +162,7 @@ function Navbar() {
                       signOut();
                       logout();
                     }}
-                    className="text-[#FF2A6D] hover:bg-[#231651]/80 hover:text-[#05FFF8]"
+                    className="text-[#FF2A6D] hover:bg-[#231651]/80 hover:text-[#05FFF8] cursor-pointer"
                   >
                     Logout
                   </DropdownMenuItem>
@@ -181,10 +181,10 @@ function Navbar() {
                 <Button
                   variant="default"
                   size="sm"
-                  onClick={() => router.push("/signup")}
+                  onClick={() => router.push("/auth/register")}
                   className="bg-[#FF2A6D] hover:bg-[#FF2A6D]/80 text-white cursor-pointer"
                 >
-                  Sign Up
+                  Register
                 </Button>
               </>
             )}
@@ -229,12 +229,12 @@ function Navbar() {
                         variant="default"
                         size="default"
                         onClick={() => {
-                          router.push("/signup");
+                          router.push("/auth/register");
                           setIsMenuOpen(false);
                         }}
                         className="w-full bg-[#FF2A6D]"
                       >
-                        Sign Up
+                        Register
                       </Button>
                     </>
                   )}

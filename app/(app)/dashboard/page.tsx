@@ -51,7 +51,6 @@ function Dashboard() {
     const fetchAllData = async () => {
       setIsLoading(true)
       try {
-        // Fetch companies
         const companiesResponse = await fetch(`${backendUrl}/company/fetch-companies?userId=${userId}`, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -103,6 +102,9 @@ function Dashboard() {
       setCompanyName("")
       setIsDialogOpen(false)
       toast.success("Company added successfully", { id: toastId })
+      setTimeout(() => {
+        window.location.reload();
+      },2000)
     } catch (error: any) {
       toast.error(error.message || "Failed to add company", { id: toastId })
     }
