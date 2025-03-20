@@ -29,3 +29,10 @@ model User {
   isAdmin      Boolean  @default(false)
   createdAt    DateTime @default(now())
 }
+
+model Feedback {
+  name String
+  email String @unique
+  message  String
+  createdAt DateTime @default(now())
+}
