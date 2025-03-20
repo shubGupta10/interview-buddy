@@ -1,9 +1,6 @@
 {
-    "cron": [
-      {
-        "path": "/api/ping",
-        "schedule": "*/5 * * * *"
-      }
-    ]
-  }
-  
+  "crons": [{
+    "path": "/api/ping",
+    "schedule":  "*/5 * * * *"
+  }]
+}
