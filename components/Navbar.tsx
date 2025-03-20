@@ -15,6 +15,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import useAuthStore from "@/app/store/useAuthStore";
+import Image from "next/image";
 
 interface User {
   id: string;
@@ -81,16 +82,22 @@ function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#1A1040] border-b border-[#FF2A6D]/30 text-white shadow-lg">
+    <nav className="sticky top-0 p-1 z-50 bg-[#1A1040] border-b border-[#FF2A6D]/30 text-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
-          <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center hover:text-white">
-              <span className="text-xl sm:text-2xl font-bold whitespace-nowrap">
-                <span className="text-[#FF2A6D]">Interview</span>
-                <span className="text-[#9D4EDD]">Buddy</span>
-              </span>
+          <div className="flex-shrink-0 py-2">
+            <Link href="/" className="flex items-center justify-center hover:text-white">
+              <div className="relative h-10 w-auto mb-2 px-2">
+                <Image
+                  alt="InterviewBuddy Image"
+                  src="/bot_new.png"
+                  width={165}
+                  height={165}
+                  className="object-cover mb-2"
+                  priority
+                />
+              </div>
             </Link>
           </div>
 
@@ -101,11 +108,10 @@ function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-3 py-2 text-base font-medium transition-colors rounded-md ${
-                    isActive(link.href)
+                  className={`px-3 py-2 text-base font-medium transition-colors rounded-md ${isActive(link.href)
                       ? "bg-[#231651]/80 text-[#05FFF8]"
                       : "text-[#D1D7E0] hover:text-[#05FFF8] hover:bg-[#231651]/30"
-                  }`}
+                    }`}
                 >
                   {link.label}
                 </Link>
@@ -113,11 +119,10 @@ function Navbar() {
               {isMounted && currentUser?.isAdmin && (
                 <Link
                   href="/admin/dashboard"
-                  className={`px-3 py-2 text-base font-medium transition-colors rounded-md ${
-                    isActive("/admin/dashboard")
+                  className={`px-3 py-2 text-base font-medium transition-colors rounded-md ${isActive("/admin/dashboard")
                       ? "bg-[#231651]/80 text-[#05FFF8]"
                       : "text-[#D1D7E0] hover:text-[#05FFF8] hover:bg-[#231651]/30"
-                  }`}
+                    }`}
                 >
                   Admin
                 </Link>
@@ -199,11 +204,10 @@ function Navbar() {
                       key={link.href}
                       href={link.href}
                       onClick={() => setIsMenuOpen(false)}
-                      className={`block px-3 py-2 rounded-md ${
-                        isActive(link.href)
+                      className={`block px-3 py-2 rounded-md ${isActive(link.href)
                           ? "bg-[#231651] text-[#05FFF8]"
                           : "text-[#D1D7E0] hover:text-[#05FFF8]"
-                      }`}
+                        }`}
                     >
                       {link.label}
                     </Link>
