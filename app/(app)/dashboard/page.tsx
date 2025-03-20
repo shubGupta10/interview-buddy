@@ -150,38 +150,38 @@ function Dashboard() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="container mx-auto px-4 py-4 sm:py-6 mb-20 lg:mb-0 md:py-8 max-w-6xl lg:min-h-screen">
       {/* Header Section */}
-      <div className="mb-8 text-center">
-        <h1 className="text-4xl md:text-5xl font-bold mb-3 text-white">
+      <div className="mb-4 sm:mb-6 md:mb-8 text-center">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-3 text-white">
           Good {getTimeOfDay()},{" "}
           <span className="text-[#05FFF8] font-medium">{user?.name?.split(" ")[0] || "there"}</span>!
         </h1>
-        <p className="text-xl text-[#D1D7E0]/80 mb-4">Your interview preparation dashboard</p>
+        <p className="text-lg sm:text-xl text-[#D1D7E0]/80 mb-4">Your interview preparation dashboard</p>
       </div>
 
       {/* Dashboard Stats */}
-      <div className="mb-10 bg-[#1A1040]/50 p-6 rounded-xl border border-[#9D4EDD]/30">
-        <div className="flex flex-col space-y-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-2xl font-semibold text-[#05FFF8]">Dashboard Overview</h2>
-              <p className="text-[#D1D7E0]/70">Your interview preparation at a glance</p>
+      <div className="mb-6 sm:mb-8 md:mb-10 bg-[#1A1040]/50 p-4 sm:p-6 rounded-xl border border-[#9D4EDD]/30">
+        <div className="flex flex-col space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
+            <div className="w-full sm:w-auto">
+              <h2 className="text-xl sm:text-2xl font-semibold text-[#05FFF8]">Dashboard Overview</h2>
+              <p className="text-sm sm:text-base text-[#D1D7E0]/70">Your interview preparation at a glance</p>
             </div>
-            <div className="flex space-x-3">
-              <div className="bg-[#231651] px-5 py-3 rounded-lg border border-[#9D4EDD]/30">
+            <div className="flex flex-wrap gap-3 w-full sm:w-auto">
+              <div className="flex-1 sm:flex-none bg-[#231651] px-4 sm:px-5 py-3 rounded-lg border border-[#9D4EDD]/30">
                 <div className="flex items-center space-x-2">
                   <Building2 size={18} className="text-[#FF2A6D]" />
                   <p className="text-[#D1D7E0]/70 text-sm">Companies</p>
                 </div>
-                <p className="text-3xl font-bold text-[#FF2A6D]">{dashboardDetails.totalCompanies}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-[#FF2A6D]">{dashboardDetails.totalCompanies}</p>
               </div>
-              <div className="bg-[#231651] px-5 py-3 rounded-lg border border-[#9D4EDD]/30">
+              <div className="flex-1 sm:flex-none bg-[#231651] px-4 sm:px-5 py-3 rounded-lg border border-[#9D4EDD]/30">
                 <div className="flex items-center space-x-2">
                   <Layers size={18} className="text-[#05FFF8]" />
                   <p className="text-[#D1D7E0]/70 text-sm">Interview Rounds</p>
                 </div>
-                <p className="text-3xl font-bold text-[#05FFF8]">{dashboardDetails.totalRounds}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-[#05FFF8]">{dashboardDetails.totalRounds}</p>
               </div>
             </div>
           </div>
@@ -189,18 +189,18 @@ function Dashboard() {
       </div>
 
       {/* Create Company Section */}
-      <div className="flex justify-center mb-10">
+      <div className="flex justify-center mb-6 sm:mb-8 md:mb-10">
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-[#FF2A6D] hover:bg-[#FF2A6D]/80 text-white px-6 py-6 rounded-lg shadow-lg hover:shadow-[#FF2A6D]/20 transition-all duration-300 flex items-center gap-2 text-lg font-medium cursor-pointer">
-              <PlusCircle size={20} />
+            <Button className="w-full sm:w-auto bg-[#FF2A6D] hover:bg-[#FF2A6D]/80 text-white px-4 sm:px-6 py-4 sm:py-6 rounded-lg shadow-lg hover:shadow-[#FF2A6D]/20 transition-all duration-300 flex items-center justify-center gap-2 text-base sm:text-lg font-medium cursor-pointer">
+              <PlusCircle className="w-[18px] h-[18px] sm:w-[20px] sm:h-[20px]" />
               Create New Company
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-[#231651] border border-[#9D4EDD] text-[#D1D7E0]">
+          <DialogContent className="bg-[#231651] border border-[#9D4EDD] text-[#D1D7E0] w-[95%] sm:max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-[#05FFF8] text-2xl">Create a New Company</DialogTitle>
-              <DialogDescription className="text-[#D1D7E0]/70">
+              <DialogTitle className="text-[#05FFF8] text-xl sm:text-2xl">Create a New Company</DialogTitle>
+              <DialogDescription className="text-[#D1D7E0]/70 text-sm sm:text-base">
                 Add a company to organize your interview preparation
               </DialogDescription>
             </DialogHeader>
@@ -230,10 +230,10 @@ function Dashboard() {
 
       {/* Confirmation Dialog for Delete */}
       <Dialog open={isConfirmDeleteOpen} onOpenChange={setIsConfirmDeleteOpen}>
-        <DialogContent className="bg-[#231651] border border-[#9D4EDD] text-[#D1D7E0]">
+        <DialogContent className="bg-[#231651] border border-[#9D4EDD] text-[#D1D7E0] w-[95%] sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-[#FF2A6D] text-2xl">Confirm Deletion</DialogTitle>
-            <DialogDescription className="text-[#D1D7E0]/70">
+            <DialogTitle className="text-[#FF2A6D] text-xl sm:text-2xl">Confirm Deletion</DialogTitle>
+            <DialogDescription className="text-[#D1D7E0]/70 text-sm sm:text-base">
               Are you sure you want to delete this company? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
@@ -253,10 +253,12 @@ function Dashboard() {
 
       {/* Display Companies */}
       <div className="max-w-3xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold text-[#05FFF8] pl-2 border-l-4 border-[#FF2A6D]">Your Companies</h2>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-2 sm:gap-0">
+          <h2 className="text-xl sm:text-2xl font-semibold text-[#05FFF8] pl-2 border-l-4 border-[#FF2A6D]">
+            Your Companies
+          </h2>
           {companies.length > 0 && (
-            <div className="text-[#D1D7E0]/70">
+            <div className="text-sm sm:text-base text-[#D1D7E0]/70">
               <span className="text-[#05FFF8] font-medium">{companies.length}</span>{" "}
               {companies.length === 1 ? "company" : "companies"} found
             </div>
@@ -264,10 +266,10 @@ function Dashboard() {
         </div>
 
         {isLoading ? (
-          <div className="text-center p-12 border border-dashed border-[#9D4EDD]/30 rounded-xl bg-[#1A1040]/50">
+          <div className="text-center p-6 sm:p-12 border border-dashed border-[#9D4EDD]/30 rounded-xl bg-[#1A1040]/50">
             <div className="text-[#D1D7E0]/60">
-              <Loader2 size={40} className="mx-auto mb-3 opacity-50 animate-spin" />
-              <p className="text-lg">Loading companies...</p>
+              <Loader2 className="mx-auto mb-3 opacity-50 animate-spin w-8 sm:w-10 h-8 sm:h-10" />
+              <p className="text-base sm:text-lg">Loading companies...</p>
             </div>
           </div>
         ) : companies.length > 0 ? (
@@ -275,47 +277,47 @@ function Dashboard() {
             {companies.map((company, index) => (
               <div
                 key={company.id || index}
-                className="p-5 border border-[#9D4EDD]/30 rounded-xl bg-gradient-to-r from-[#1A1040] to-[#231651] hover:from-[#231651] hover:to-[#1A1040] shadow-lg hover:shadow-[#9D4EDD]/20 transition-all duration-300 flex justify-between items-center group"
+                className="p-4 sm:p-5 border border-[#9D4EDD]/30 rounded-xl bg-gradient-to-r from-[#1A1040] to-[#231651] hover:from-[#231651] hover:to-[#1A1040] shadow-lg hover:shadow-[#9D4EDD]/20 transition-all duration-300 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 group"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 w-full sm:w-auto">
                   <div className="p-2 bg-[#9D4EDD]/20 rounded-full text-[#05FFF8]">
-                    <Building2 size={24} />
+                    <Building2 className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-medium text-white">{company.companyName}</h3>
-                    <p className="text-sm text-[#D1D7E0]/60">
+                    <h3 className="text-lg sm:text-xl font-medium text-white">{company.companyName}</h3>
+                    <p className="text-xs sm:text-sm text-[#D1D7E0]/60">
                       ID: {company.id ? company.id.substring(0, 8) : "N/A"}...
                     </p>
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 w-full sm:w-auto justify-end">
                   <Button
-                    className="bg-[#05FFF8] hover:bg-[#05FFF8]/80 text-[#1A1040] font-medium px-4 flex items-center gap-1 group-hover:gap-2 transition-all duration-300 cursor-pointer"
+                    className="flex-1 sm:flex-none bg-[#05FFF8] hover:bg-[#05FFF8]/80 text-[#1A1040] font-medium px-3 sm:px-4 py-2 text-sm sm:text-base flex items-center justify-center gap-1 group-hover:gap-2 transition-all duration-300 cursor-pointer"
                     onClick={() => router.push(`/dashboard/rounds?companyId=${company.id}`)}
                   >
                     Open{" "}
-                    <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
+                    <ChevronRight size={14} className="w-3.5 sm:w-4 h-3.5 sm:h-4 group-hover:translate-x-1 transition-transform duration-300" />
                   </Button>
 
                   <Button
-                    className="bg-[#ff2a6d] hover:bg-[#d12564] text-white font-medium px-4 flex items-center gap-1 cursor-pointer"
+                    className="flex-1 sm:flex-none bg-[#ff2a6d] hover:bg-[#d12564] text-white font-medium px-3 sm:px-4 py-2 text-sm sm:text-base flex items-center justify-center gap-1 cursor-pointer"
                     onClick={() => openDeleteConfirmation(company.id)}
                   >
-                    Delete <Trash size={16} />
+                    Delete <Trash className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
                   </Button>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center p-12 border border-dashed border-[#9D4EDD]/30 rounded-xl bg-[#1A1040]/50">
+          <div className="text-center p-6 sm:p-12 border border-dashed border-[#9D4EDD]/30 rounded-xl bg-[#1A1040]/50">
             <div className="text-[#D1D7E0]/60 mb-3">
-              <Building2 size={40} className="mx-auto mb-3 opacity-50" />
-              <p className="text-lg">No companies found. Create one to get started!</p>
+              <Building2 size={32} className="mx-auto mb-3 opacity-50 sm:w-10 sm:h-10" />
+              <p className="text-base sm:text-lg">No companies found. Create one to get started!</p>
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-[#FF2A6D]/80 hover:bg-[#FF2A6D] text-white mt-3">
+                <Button className="bg-[#FF2A6D]/80 hover:bg-[#FF2A6D] text-white mt-3 w-full sm:w-auto">
                   <PlusCircle size={16} className="mr-2" />
                   Create Your First Company
                 </Button>
@@ -329,4 +331,3 @@ function Dashboard() {
 }
 
 export default Dashboard
-

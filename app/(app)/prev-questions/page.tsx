@@ -381,7 +381,7 @@ const QuestionCategories: React.FC<Props> = ({
                     <div className="mt-4 flex justify-end">
                       <Button
                         onClick={() => handleExplain(q.id)}
-                        className="bg-[#9D4EDD]/20 text-[#9D4EDD] border border-[#9D4EDD]/30 hover:bg-[#9D4EDD]/30 transition-colors"
+                        className="bg-[#FF2A6D] text-white border border-[#ff2a4a] hover:bg-[#ff2a4a] transition-colors cursor-pointer"
                       >
                         <Code className="h-4 w-4 mr-2" />
                         Explain
