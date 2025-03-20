@@ -216,7 +216,7 @@ function DisplayQuestions() {
                       </div>
                     </div>
                     
-                    <AccordionTrigger className="hover:no-underline py-0">
+                    <AccordionTrigger className="cursor-pointer hover:no-underline py-0">
                       <p className="text-[#D1D7E0] font-medium text-left">{q.question}</p>
                     </AccordionTrigger>
                     
@@ -234,7 +234,7 @@ function DisplayQuestions() {
                     </div>
                   </div>
                   
-                  <AccordionContent className="px-5 pb-5 pt-1 text-[#D1D7E0]/90">
+                  <AccordionContent className="cursor-pointer px-5 pb-5 pt-1 text-[#D1D7E0]/90">
                     <div className="bg-[#1A1040]/50 p-4 rounded-lg border border-[#9D4EDD]/20 mb-3">
                       <p className="whitespace-pre-line">{q.answer}</p>
                     </div>
