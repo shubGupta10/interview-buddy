@@ -65,49 +65,47 @@ function GenerateQuestions() {
   }
 
   useEffect(() => {
-    // Get the current date in YYYY-MM-DD format
-    const today = new Date().toISOString().split("T")[0]
+    const fetchGenerationLimitStatus = async () => {
+      if (session.data?.user.id) {
+        try {
+          const response = await fetch(`${backendUrl}/question/track-generation-limit`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ userId: session.data?.user.id })
+          });
 
-    // Try to get the stored count data
-    const storedCountData = localStorage.getItem("questionGenerationCount")
-
-    if (storedCountData) {
-      const countData = JSON.parse(storedCountData)
-
-      // If the stored date is today, use the stored count
-      if (countData.date === today) {
-        setGenerationCount(countData.count)
-
-        // If count is already at or above 5, set rate limit reached
-        if (countData.count >= 5) {
-          setRateLimitReached(true)
-          setRateLimitMessage("You have reached the limit of 5 requests per day. Please try again tomorrow.")
+          const data = await response.json();
+          
+          if (data.success) {
+            setGenerationCount(data.used);
+            if (data.remaining <= 0) {
+              setRateLimitReached(true);
+              setRateLimitMessage(`You have reached the limit of 5 requests. Please try again in ${data.resetIn}.`);
+            } else {
+              setRateLimitReached(false);
+              setRateLimitMessage(null);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching generation limit status:", error);
         }
-      } else {
-        // If it's a new day, reset the count
-        localStorage.setItem("questionGenerationCount", JSON.stringify({ date: today, count: 0 }))
       }
-    } else {
-      // Initialize if no data exists
-      localStorage.setItem("questionGenerationCount", JSON.stringify({ date: today, count: 0 }))
-    }
-  }, [])
+    };
+
+    fetchGenerationLimitStatus();
+  }, [session.data?.user.id, backendUrl]);
 
   const handleGenerateQuestions = async () => {
     if (!difficulty) {
-      setError("Please select difficulty before generating questions.")
-      return
+      setError("Please select difficulty before generating questions.");
+      return;
     }
 
-    // Get current date
-    const today = new Date().toISOString().split("T")[0]
-
-    // Check if we've already hit the limit
-    if (generationCount >= 5) {
-      setRateLimitReached(true)
-      setRateLimitMessage("You have reached the limit of 5 requests per day. Please try again tomorrow.")
-      toast.error("Daily question generation limit reached. Please try again tomorrow.")
-      return
+    if (rateLimitReached) {
+      toast.error(rateLimitMessage || "Daily question generation limit reached. Please try again later.");
+      return;
     }
 
     const requestBody: any = {
@@ -116,26 +114,19 @@ function GenerateQuestions() {
       roundId,
       roundName,
       difficulty,
-    }
+    };
 
     if (!roundsWithoutLanguage.includes(roundName!)) {
       if (!language) {
-        setError("Please select a programming language.")
-        return
+        setError("Please select a programming language.");
+        return;
       }
-      requestBody.language = language
+      requestBody.language = language;
     }
 
     try {
-      setIsLoading(true)
-      setError(null)
-
-      // Increment the counter before making the API call
-      const newCount = generationCount + 1
-      setGenerationCount(newCount)
-
-      // Store the updated count in localStorage
-      localStorage.setItem("questionGenerationCount", JSON.stringify({ date: today, count: newCount }))
+      setIsLoading(true);
+      setError(null);
 
       const response = await fetch(`${backendUrl}/question/generate-questions`, {
         method: "POST",
@@ -143,49 +134,59 @@ function GenerateQuestions() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(requestBody),
-      })
+      });
 
       if (response.status === 429) {
-        const errorData = await response.json()
-        setRateLimitReached(true)
+        const errorData = await response.json();
+        setRateLimitReached(true);
         setRateLimitMessage(
-          errorData.message || "You have reached the limit of 5 requests per day. Please try again tomorrow.",
-        )
-        toast.error(errorData.message || "Daily question generation limit reached. Please try again tomorrow.")
-        return
+          errorData.message || "You have reached the limit of 5 requests. Please try again later."
+        );
+        toast.error(errorData.message || "Question generation limit reached. Please try again later.");
+        return;
       }
 
-      const responseText = await response.text()
+      const responseText = await response.text();
 
       if (!response.ok) {
-        throw new Error("Failed to generate questions.")
+        throw new Error("Failed to generate questions.");
       }
 
-      const data = JSON.parse(responseText)
-      setQuestions(data.questions)
+      const data = JSON.parse(responseText);
+      setQuestions(data.questions);
       router.push(
-        `/display-questions?roundId=${roundId}&roundName=${roundName}&companyId=${companyId}&difficulty=${difficulty}${language ? `&language=${language}` : ""}`,
-      )
-      toast.success("Your questions are ready! Good luck with your preparation.")
+        `/display-questions?roundId=${roundId}&roundName=${roundName}&companyId=${companyId}&difficulty=${difficulty}${language ? `&language=${language}` : ""
+        }`
+      );
+      toast.success("Your questions are ready! Good luck with your preparation.");
 
-      // Check if we've hit the limit after successful generation
-      if (newCount >= 5) {
-        setRateLimitReached(true)
-        setRateLimitMessage("You have reached the limit of 5 requests per day. Please try again tomorrow.")
+      const limitResponse = await fetch(`${backendUrl}/question/track-generation-limit`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ userId: session.data?.user.id })
+      });
+
+      const limitData = await limitResponse.json();
+
+      if (limitData.success) {
+        setGenerationCount(limitData.used);
+
+        if (limitData.remaining <= 0) {
+          setRateLimitReached(true);
+          setRateLimitMessage(`You have reached the limit of 5 requests. Please try again in ${limitData.resetIn}.`);
+        }
       }
     } catch (error) {
-      console.error("Error generating questions:", error)
-      toast.error("Oops! We couldn't generate your questions. Please check your selections and try again.")
-      setError("Error generating questions. Please try again.")
-
-      // If there was an error, decrement the counter back
-      const adjustedCount = generationCount
-      setGenerationCount(adjustedCount)
-      localStorage.setItem("questionGenerationCount", JSON.stringify({ date: today, count: adjustedCount }))
+      console.error("Error generating questions:", error);
+      toast.error("Oops! We couldn't generate your questions. Please check your selections and try again.");
+      setError("Error generating questions. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
+
 
   const navigateToPreviousQuestions = () => {
     router.push(`/prev-questions?roundId=${roundId}&roundName=${roundName}&companyId=${companyId}`)
@@ -211,7 +212,7 @@ function GenerateQuestions() {
               <div>
                 <h3 className="text-lg font-semibold text-[#ff2a6d]">Daily Limit Reached</h3>
                 <p className="text-[#D1D7E0]/80 text-sm">
-                  {rateLimitMessage || "You have reached the limit of 5 requests per day. Please try again tomorrow."}
+                  {rateLimitMessage || "You have reached the limit of 5 requests. Please try again later."}
                 </p>
               </div>
             </div>
@@ -375,11 +376,10 @@ function GenerateQuestions() {
               <Button
                 onClick={handleGenerateQuestions}
                 disabled={isLoading || rateLimitReached}
-                className={`w-full py-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center cursor-pointer ${
-                  rateLimitReached
-                    ? "bg-gray-500 hover:bg-gray-500 text-gray-300 cursor-not-allowed"
-                    : "bg-[#ff2a6d] hover:bg-[#d12564]/90 text-white hover:shadow-[#9D4EDD]/20"
-                }`}
+                className={`w-full py-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center cursor-pointer ${rateLimitReached
+                  ? "bg-gray-500 hover:bg-gray-500 text-gray-300 cursor-not-allowed"
+                  : "bg-[#ff2a6d] hover:bg-[#d12564]/90 text-white hover:shadow-[#9D4EDD]/20"
+                  }`}
               >
                 {isLoading ? (
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
