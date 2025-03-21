@@ -7,7 +7,7 @@ import {Toaster} from 'react-hot-toast'
 import Footer from "@/components/Footer";
 import { Suspense } from "react";
 import LoadingFeedback from "@/components/LoaderFallback";
-import { Analytics } from "@vercel/analytics/react"
+import Script from "next/script";
 
 
 export const metadata: Metadata = {
@@ -52,6 +52,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+    <head>
+      <Script
+      src="https://cloud.umami.is/script.js"
+      data-website-id="5f987fa7-53ab-47a5-a273-f6a805dad7fb"
+      strategy="lazyOnload"
+      />
+    </head>
       <SessionProviderWrapper>
         <body
         >
@@ -62,7 +69,6 @@ export default function RootLayout({
               reverseOrder={false}
             />
             <Suspense  fallback={<LoadingFeedback/>}>
-            <Analytics/>
             {children}
             </Suspense>
             <Footer/>
