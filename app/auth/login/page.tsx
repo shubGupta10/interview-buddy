@@ -43,7 +43,7 @@ export default function LoginPage() {
       } else {
         const response = await fetch("/api/auth/session")
         const sessionData = await response.json()
-        router.push("/dashboard")
+        router.push("/")
         toast.success(" Welcome back! Redirecting to your dashboard...");
         setTimeout(() => {
           window.location.reload()
