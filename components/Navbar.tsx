@@ -91,7 +91,7 @@ function Navbar() {
               <div className="relative h-10 w-auto mb-2 px-2">
                 <Image
                   alt="InterviewBuddy Image"
-                  src="/bot_new.png"
+                  src="https://res.cloudinary.com/dkp6hsvoy/image/upload/v1742542723/interview-buddy-logo.png"
                   width={165}
                   height={165}
                   className="object-cover mb-2"
