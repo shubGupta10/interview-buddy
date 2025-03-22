@@ -15,7 +15,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
-import { PlusCircle, Building2, ChevronRight, Trash, Layers, Loader2 } from "lucide-react"
+import { PlusCircle, Building2, ChevronRight, Trash, Layers, Loader2, AlertTriangle } from "lucide-react"
 import toast from "react-hot-toast"
 
 interface Company {
@@ -39,6 +39,7 @@ function Dashboard() {
   const [companyToDelete, setCompanyToDelete] = useState<string | null>(null)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [isRateLimited, setIsRateLimited] = useState(false)
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL
   const { user } = useAuthStore()
   const session = useSession()
@@ -51,24 +52,50 @@ function Dashboard() {
     const fetchAllData = async () => {
       setIsLoading(true)
       try {
+        // Fetch companies
         const companiesResponse = await fetch(`${backendUrl}/company/fetch-companies?userId=${userId}`, {
           method: "GET",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "x-user-id": userId },
+          credentials: "include"
         })
 
-        if (!companiesResponse.ok) throw new Error("Failed to fetch companies")
-        const companiesData = await companiesResponse.json()
-        setCompanies(companiesData.companies || [])
+        if (companiesResponse.status === 429) {
+          toast.error("Rate limit exceeded. Please try again in 1 minute.", {
+            duration: 5000,
+            icon: <AlertTriangle className="text-amber-500" />,
+          })
+          setIsRateLimited(true)
+          setCompanies([])
+        } else if (!companiesResponse.ok) {
+          throw new Error("Failed to fetch companies")
+        } else {
+          const companiesData = await companiesResponse.json()
+          setCompanies(companiesData.companies || [])
+        }
 
         // Fetch dashboard details
         const dashboardResponse = await fetch(`${backendUrl}/company/get-dashboard-details?userId=${userId}`, {
           method: "GET",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "x-user-id": userId },
+          credentials: "include"
         })
 
-        if (!dashboardResponse.ok) throw new Error("Failed to fetch dashboard details")
-        const dashboardData = await dashboardResponse.json()
-        setDashboardDetails(dashboardData.dashboardDetails)
+        if (dashboardResponse.status === 429) {
+          toast.error("Rate limit exceeded for dashboard data. Please try again in 1 minute.", {
+            duration: 5000,
+            icon: <AlertTriangle className="text-amber-500" />,
+          })
+          setIsRateLimited(true)
+          setDashboardDetails({
+            totalCompanies: 0,
+            totalRounds: 0,
+          })
+        } else if (!dashboardResponse.ok) {
+          throw new Error("Failed to fetch dashboard details")
+        } else {
+          const dashboardData = await dashboardResponse.json()
+          setDashboardDetails(dashboardData.dashboardDetails)
+        }
       } catch (error: any) {
         console.error(error.message)
         toast.error("Failed to load dashboard data")
@@ -90,6 +117,11 @@ function Dashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, companyName }),
       })
+
+      if (response.status === 429) {
+        toast.error("Rate limit exceeded. Please try again in 1 minute.", { id: toastId })
+        return
+      }
 
       if (!response.ok) throw new Error("Failed to create company")
 
@@ -122,9 +154,15 @@ function Dashboard() {
     try {
       const response = await fetch(`${backendUrl}/company/delete-company`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", },
         body: JSON.stringify({ userId, companyId: companyToDelete }),
       })
+
+      if (response.status === 429) {
+        toast.error("Rate limit exceeded. Please try again in 1 minute.", { id: toastId })
+        setIsConfirmDeleteOpen(false)
+        return
+      }
 
       if (!response.ok) throw new Error("Failed to delete company")
 
@@ -151,6 +189,11 @@ function Dashboard() {
     return "evening"
   }
 
+  const handleRetry = () => {
+    setIsRateLimited(false)
+    window.location.reload()
+  }
+
   return (
     <div className="container mx-auto px-4 py-4 sm:py-6 mb-20 lg:mb-0 md:py-8 max-w-6xl lg:min-h-screen">
       {/* Header Section */}
@@ -161,6 +204,23 @@ function Dashboard() {
         </h1>
         <p className="text-lg sm:text-xl text-[#D1D7E0]/80 mb-4">Your interview preparation dashboard</p>
       </div>
+
+      {/* Rate Limit Warning Banner - Only shown when rate limited */}
+      {isRateLimited && (
+        <div className="mb-6 bg-amber-900/30 border border-amber-600/50 rounded-lg p-4 flex items-center gap-3">
+          <AlertTriangle className="text-amber-500 flex-shrink-0" />
+          <div className="flex-1">
+            <h3 className="font-medium text-amber-400">Rate Limit Exceeded</h3>
+            <p className="text-[#D1D7E0]/80 text-sm">You've reached the request limit. Please wait a minute before trying again.</p>
+          </div>
+          <Button 
+            onClick={handleRetry} 
+            className="bg-amber-600 hover:bg-amber-700 text-white"
+          >
+            Retry
+          </Button>
+        </div>
+      )}
 
       {/* Dashboard Stats */}
       <div className="mb-6 sm:mb-8 md:mb-10 bg-[#1A1040]/50 p-4 sm:p-6 rounded-xl border border-[#9D4EDD]/30">
@@ -272,6 +332,16 @@ function Dashboard() {
             <div className="text-[#D1D7E0]/60">
               <Loader2 className="mx-auto mb-3 opacity-50 animate-spin w-8 sm:w-10 h-8 sm:h-10" />
               <p className="text-base sm:text-lg">Loading companies...</p>
+            </div>
+          </div>
+        ) : isRateLimited ? (
+          <div className="text-center p-6 sm:p-12 border border-dashed border-[#9D4EDD]/30 rounded-xl bg-[#1A1040]/50">
+            <div className="text-[#D1D7E0]/60">
+              <AlertTriangle className="mx-auto mb-3 opacity-50 w-8 sm:w-10 h-8 sm:h-10 text-amber-500" />
+              <p className="text-base sm:text-lg mb-4">Rate limit exceeded. Please try again in 1 minute.</p>
+              <Button onClick={handleRetry} className="bg-amber-600 hover:bg-amber-700 text-white">
+                Retry Now
+              </Button>
             </div>
           </div>
         ) : companies.length > 0 ? (

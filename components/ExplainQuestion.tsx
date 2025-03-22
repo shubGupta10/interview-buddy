@@ -1,8 +1,9 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Book, X, List, Lightbulb, Code, FileText, Loader2, Copy, Check, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useSession } from 'next-auth/react';
 
 type ExplanationData = {
   actionable_insights: string[];
@@ -31,8 +32,10 @@ const ExplainQuestionComponent: React.FC<ExplainQuestionProps> = ({
   const [data, setData] = useState<ExplanationData | null>(null);
   const [copiedMap, setCopiedMap] = useState<Record<string, boolean>>({});
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const session = useSession();
+  const userId = session.data?.user.id;
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchExplanation = async () => {
       if (!isOpen || !questionId || !question) return;
 
@@ -46,6 +49,7 @@ const ExplainQuestionComponent: React.FC<ExplainQuestionProps> = ({
           body: JSON.stringify({
             questionId,
             question,
+            userId,
           }),
         });
 
