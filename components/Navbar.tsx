@@ -95,7 +95,7 @@ function Navbar() {
                   width={165}
                   height={165}
                   className="object-cover mb-2"
-                  priority
+                  loading="lazy"
                 />
               </div>
             </Link>
