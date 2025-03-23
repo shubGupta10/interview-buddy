@@ -164,7 +164,7 @@ const DeleteComponent = ({
         variant="destructive"
         size="sm"
         onClick={handleOpenDialog}
-        className="bg-[#FF2A6D] hover:bg-[#ff2a4a] text-white border border-[#ff2a4a] transition-colors p-5"
+        className="bg-[#FF2A6D] hover:bg-[#ff2a4a] text-white border border-[#ff2a4a] transition-colors p-5 cursor-pointer"
       >
         <Trash2 className="h-4 w-4 mr-2" />
         Delete Questions
@@ -175,7 +175,7 @@ const DeleteComponent = ({
         size="sm"
         onClick={handleRefresh}
         disabled={isRefreshing}
-        className="bg-[#1A1040] hover:bg-[#1A1040]/80 text-[#05FFF8] border border-[#05FFF8]/30 transition-colors p-5"
+        className="bg-[#1A1040] hover:bg-[#1A1040]/80 text-[#ffff] hover:text-white cursor-pointer border border-[#05FFF8]/30 transition-colors p-5"
       >
         {isRefreshing ? (
           <>
@@ -249,7 +249,7 @@ const DeleteComponent = ({
               </Select>
             )}
 
-            <div className="mt-4 p-3 bg-[#FF2A6D]/10 border text-white border-[#FF2A6D]/30 rounded-md ">
+            <div className="mt-4 p-3 cursor-pointer bg-[#FF2A6D]/10 border text-white border-[#FF2A6D]/30 rounded-md ">
               <p className="text-white mb-2 font-semibold">You're about to:</p>
               <p>{getConfirmationMessage()}</p>
               <p className="mt-2 font-semibold text-[#FF2A6D]">This action cannot be undone.</p>
@@ -266,7 +266,7 @@ const DeleteComponent = ({
                 handleDelete()
               }}
               disabled={isDeleting || isDeleteButtonDisabled}
-              className={`bg-[#FF2A6D] text-white hover:bg-[#ff2a4a] flex items-center ${
+              className={`bg-[#FF2A6D] text-white hover:bg-[#ff2a4a] cursor-pointer flex items-center ${
                 isDeleteButtonDisabled ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
