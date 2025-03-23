@@ -3,12 +3,13 @@
 import type React from "react"
 
 import { useEffect, useState } from "react"
-import { Book, Code, Filter, X, Award, Loader2, Search, ChevronLeft, Layers, AlertCircle } from "lucide-react"
+import { Book, Code, Filter, X, Award, Loader2, Search, ChevronLeft, Layers, AlertCircle, Trash2 } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import toast from "react-hot-toast"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import ExplainQuestionComponent from "@/components/ExplainQuestion"
+import DeleteComponent from "@/components/DeleteComponent" // Import the new component
 
 type Question = {
   id: string
@@ -16,19 +17,6 @@ type Question = {
   answer: string
   language: string
   difficulty: string
-}
-
-type Props = {
-  params?: {
-    companyId?: string
-    roundId?: string
-    roundName?: string
-  }
-  searchParams?: {
-    companyId?: string
-    roundId?: string
-    roundName?: string
-  }
 }
 
 
@@ -52,52 +40,52 @@ const QuestionCategories = () => {
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL
 
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      if (!companyId || !roundId) return
+  const fetchQuestions = async () => {
+    if (!companyId || !roundId) return
 
-      setIsLoading(true)
-      setError(null)
+    setIsLoading(true)
+    setError(null)
 
-      try {
-        let queryUrl = `${backendUrl}/question/fetch-questions-by-round?companyId=${companyId}&roundId=${roundId}`
+    try {
+      let queryUrl = `${backendUrl}/question/fetch-questions-by-round?companyId=${companyId}&roundId=${roundId}`
 
-        // Add optional parameters if selected
-        if (selectedCategory) {
-          queryUrl += `&language=${selectedCategory}`
-        }
-
-        if (selectedDifficulty) {
-          queryUrl += `&difficulty=${selectedDifficulty}`
-        }
-
-        const response = await fetch(queryUrl)
-        const data = await response.json()
-
-        if (data.success) {
-          setQuestions(data.questions)
-
-          // Categorize questions by language
-          const categorized: Record<string, Question[]> = {}
-          data.questions.forEach((q: Question) => {
-            if (!categorized[q.language]) {
-              categorized[q.language] = []
-            }
-            categorized[q.language].push(q)
-          })
-          setCategorizedQuestions(categorized)
-        } else {
-          setError("Failed to fetch questions")
-        }
-      } catch (error) {
-        toast.error("No prev questions found")
-        console.error("Error fetching questions:", error)
-        setError("Error loading questions. Please try again.")
-      } finally {
-        setIsLoading(false)
+      // Add optional parameters if selected
+      if (selectedCategory) {
+        queryUrl += `&language=${selectedCategory}`
       }
-    }
 
+      if (selectedDifficulty) {
+        queryUrl += `&difficulty=${selectedDifficulty}`
+      }
+
+      const response = await fetch(queryUrl)
+      const data = await response.json()
+
+      if (data.success) {
+        setQuestions(data.questions)
+
+        // Categorize questions by language
+        const categorized: Record<string, Question[]> = {}
+        data.questions.forEach((q: Question) => {
+          if (!categorized[q.language]) {
+            categorized[q.language] = []
+          }
+          categorized[q.language].push(q)
+        })
+        setCategorizedQuestions(categorized)
+      } else {
+        setError("Failed to fetch questions")
+      }
+    } catch (error) {
+      toast.error("No prev questions found")
+      console.error("Error fetching questions:", error)
+      setError("Error loading questions. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
     fetchQuestions()
   }, [backendUrl, companyId, roundId, selectedCategory, selectedDifficulty])
 
@@ -109,10 +97,8 @@ const QuestionCategories = () => {
     }
   }
 
-  // Get unique difficulty levels
   const difficulties = Array.from(new Set(questions.map((q) => q.difficulty))).filter(Boolean)
 
-  // Get difficulty badge color
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty.toLowerCase()) {
       case "easy":
@@ -194,9 +180,21 @@ const QuestionCategories = () => {
         </button>
 
         <div className="bg-gradient-to-br from-[#1A1040] to-[#231651] p-6 rounded-xl border border-[#9D4EDD]/30 shadow-lg mb-6">
-          <h1 className="text-2xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-[#05FFF8] to-[#9D4EDD]">
-            {roundName || "Interview"} Questions & Answers
-          </h1>
+          <div className="flex justify-between items-start mb-2">
+            <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#05FFF8] to-[#9D4EDD]">
+              {roundName || "Interview"} Questions & Answers
+            </h1>
+            
+            {/* Add the delete all questions button here */}
+            {questions.length > 0 && (
+              <DeleteComponent 
+                companyId={companyId} 
+                roundId={roundId} 
+                roundName={roundName || ""}
+                onDeleteSuccess={fetchQuestions}
+              />
+            )}
+          </div>
 
           <div className="flex flex-wrap gap-3 mb-4">
             {selectedDifficulty && (
@@ -266,10 +264,26 @@ const QuestionCategories = () => {
           {/* Language filters */}
           {Object.keys(categorizedQuestions).length > 0 && (
             <div className="mb-4">
-              <h3 className="text-[#9D4EDD] text-md font-medium mb-3 flex items-center">
-                <Code className="w-4 h-4 mr-2" />
-                Filter by Language
-              </h3>
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-[#9D4EDD] text-md font-medium flex items-center">
+                  <Code className="w-4 h-4 mr-2" />
+                  Filter by Language
+                </h3>
+                
+                {/* Add the delete by language button when a language is selected */}
+                {selectedCategory && (
+                  <DeleteComponent
+                    companyId={companyId}
+                    roundId={roundId}
+                    roundName={roundName || ""}
+                    languages={[selectedCategory]}
+                    onDeleteSuccess={() => {
+                      setSelectedCategory(null)
+                      fetchQuestions()
+                    }}
+                  />
+                )}
+              </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {Object.keys(categorizedQuestions).map((language) => (
                   <div
@@ -297,10 +311,26 @@ const QuestionCategories = () => {
           {/* Difficulty filters */}
           {difficulties.length > 0 && (
             <div>
-              <h3 className="text-[#9D4EDD] text-md font-medium mb-3 flex items-center">
-                <Award className="w-4 h-4 mr-2" />
-                Filter by Difficulty
-              </h3>
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-[#9D4EDD] text-md font-medium flex items-center">
+                  <Award className="w-4 h-4 mr-2" />
+                  Filter by Difficulty
+                </h3>
+                
+                {/* Add the delete by difficulty button when a difficulty is selected */}
+                {selectedDifficulty && (
+                  <DeleteComponent
+                    companyId={companyId}
+                    roundId={roundId}
+                    roundName={roundName || ""}
+                    difficulties={selectedDifficulty ? [selectedDifficulty] : undefined}
+                    onDeleteSuccess={() => {
+                      setSelectedDifficulty(null)
+                      fetchQuestions()
+                    }}
+                  />
+                )}
+              </div>
               <div className="flex flex-wrap gap-3">
                 {difficulties.map((difficulty) => (
                   <div
