@@ -62,7 +62,8 @@ export default function CompanyRounds() {
   
         const companyResponse = await fetch(`${backendUrl}/company/fetch-companies?userId=${userId}`, {
           method: "GET",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "Cache-Control": "max-age=300"  },
+          cache: "default" 
         })
   
         if (companyResponse.ok) {
@@ -72,7 +73,8 @@ export default function CompanyRounds() {
   
         const roundsResponse = await fetch(`${backendUrl}/company/fetch-rounds?companyId=${companyId}`, {
           method: "GET",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "Cache-Control": "max-age=300"  },
+          cache: "default"
         });
   
         if (!roundsResponse.ok) throw new Error("Failed to fetch rounds");
@@ -125,9 +127,9 @@ export default function CompanyRounds() {
       setSelectedRound("");
       setIsDialogOpen(false);
   
-      toast.success(`✅ ${selectedRound} added successfully!`, { id: toastId });
+      toast.success(` ${selectedRound} added successfully!`, { id: toastId });
     } catch (error) {
-      toast.error("❌ Failed to add interview round. Please try again.", { id: toastId });
+      toast.error(" Failed to add interview round. Please try again.", { id: toastId });
       console.error("Error adding round:", error);
       setError("Failed to add interview round.");
     } finally {
@@ -172,12 +174,10 @@ export default function CompanyRounds() {
     }
   };
   
-  // Function to navigate to previous questions
   const navigateToPreviousQuestions = (roundId: string, roundName: string) => {
     router.push(`/prev-questions?roundId=${roundId}&roundName=${roundName}&companyId=${companyId}`);
   };
 
-  // Function to get round icon based on round name
   const getRoundIcon = (roundName: string) => {
     switch (roundName) {
       case "Technical Interview":

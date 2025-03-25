@@ -112,7 +112,6 @@ const QuestionCategories = () => {
     }
   }
 
-  // Difficulty emoji
   const getDifficultyEmoji = (difficulty: string) => {
     switch (difficulty.toLowerCase()) {
       case "easy":
@@ -126,7 +125,6 @@ const QuestionCategories = () => {
     }
   }
 
-  // Get language icon
   const getLanguageIcon = (language: string) => {
     switch (language.toLowerCase()) {
       case "python":
@@ -150,7 +148,6 @@ const QuestionCategories = () => {
     }
   }
 
-  // Filter questions based on search term and selected filters
   const filteredQuestions = (
     selectedCategory
       ? categorizedQuestions[selectedCategory]?.filter(

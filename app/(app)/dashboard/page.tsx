@@ -55,9 +55,14 @@ function Dashboard() {
         // Fetch companies
         const companiesResponse = await fetch(`${backendUrl}/company/fetch-companies?userId=${userId}`, {
           method: "GET",
-          headers: { "Content-Type": "application/json", "x-user-id": userId },
-          credentials: "include"
-        })
+          headers: {
+            "Content-Type": "application/json",
+            "x-user-id": userId,
+            "Cache-Control": "max-age=300" 
+          },
+          credentials: "include",
+          cache: "default" 
+        });
 
         if (companiesResponse.status === 429) {
           toast.error("Rate limit exceeded. Please try again in 1 minute.", {
