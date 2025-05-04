@@ -55,10 +55,16 @@ cd interview-buddy
 
 ### 2. Install Dependencies
 
+<<<<<<< HEAD
 ```bash
 # Install frontend dependencies
 cd client
 npm install
+=======
+
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+>>>>>>> e7705ee65cea9cd881b8929bf69d425d8519f3d2
 
 # Install backend dependencies
 cd ../server
